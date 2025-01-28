@@ -1,3 +1,9 @@
-DROP TABLE hash;
-DROP TABLE url;
-DROP SEQUENCE unique_number_seq;
+DROP TABLE users;
+DROP TABLE categories;
+DROP TABLE lot;
+DROP TABLE bids;
+DROP TABLE transactions;
+DROP TABLE transactions;
+DROP TABLE images;
+
+

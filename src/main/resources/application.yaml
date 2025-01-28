@@ -20,5 +20,12 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  password-hash:
+    salt-length: 16
+    hash-length: 32
+    parallelism: 1
+    memory: 65536
+    iterations: 3
+
 server:
   port: 8080
