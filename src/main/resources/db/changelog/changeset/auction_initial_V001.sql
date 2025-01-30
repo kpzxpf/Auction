@@ -53,7 +53,9 @@ CREATE TABLE transactions
 CREATE TABLE images
 (
     id          SERIAL PRIMARY KEY,
+    name        VARCHAR(255) NOT NULL,
+    size        INT NOT NULL,
     lot_id     INT          NOT NULL REFERENCES lots (id) ON DELETE CASCADE,
-    key         VARCHAR(255) NOT NULL,
+    key         VARCHAR(50) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

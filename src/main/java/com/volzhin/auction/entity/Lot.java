@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "lots")
@@ -42,6 +43,9 @@ public class Lot {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
+
+    @OneToMany(mappedBy = "lot", orphanRemoval = true)
+    private List<Image> images;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

@@ -18,11 +18,17 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
+
+    @Column(name = "size")
+    private long size;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot_id", nullable = false)
     private Lot lot;
 
-    @Column(name = "key", nullable = false, length = 255)
+    @Column(name = "key", nullable = false, length = 50)
     private String key;
 
     @CreationTimestamp
