@@ -1,6 +1,5 @@
 package com.volzhin.auction.service.image;
 
-import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.exception.FileException;
@@ -40,7 +39,7 @@ public class ImageService {
         image.setLot(lot);
         image = imageRepository.save(image);
         lot.getImages().add(image);
-        lotService.save(lot);
+        lotService.saveLot(lot);
 
         return image;
     }
@@ -59,7 +58,7 @@ public class ImageService {
         });
 
         lot.getImages().addAll(images);
-        lotService.save(lot);
+        lotService.saveLot(lot);
 
         return images;
     }

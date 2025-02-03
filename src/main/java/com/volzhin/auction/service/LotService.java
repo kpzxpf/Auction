@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -13,6 +14,17 @@ import org.springframework.stereotype.Service;
 public class LotService {
     private final LotRepository lotRepository;
 
+    @Transactional
+    public Lot createLot(Lot lot) {
+        return lotRepository.save(lot);
+    }
+
+    @Transactional
+    public Lot updateLot(Lot lot) {
+        return lotRepository.save(lot);
+    }
+
+    @Transactional(readOnly = true)
     public Lot findById(long id) {
         return lotRepository.findById(id)
                 .orElseThrow(() -> {
@@ -21,7 +33,8 @@ public class LotService {
                 });
     }
 
-    public Lot save(Lot lot) {
+    @Transactional
+    public Lot saveLot(Lot lot) {
         return lotRepository.save(lot);
     }
 }
