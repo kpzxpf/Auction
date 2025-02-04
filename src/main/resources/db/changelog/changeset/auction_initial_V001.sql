@@ -28,7 +28,8 @@ CREATE TABLE lots
     category_id    INT            REFERENCES categories (id) ON DELETE SET NULL,
     status         VARCHAR(20) CHECK (status IN ('active', 'closed', 'sold')) DEFAULT 'active',
     created_at     TIMESTAMP                                                  DEFAULT CURRENT_TIMESTAMP,
-    end_time       TIMESTAMP      NOT NULL
+    start_time     TIMESTAMP      NOT NULL                                    DEFAULT CURRENT_TIMESTAMP,
+    end_time       TIMESTAMP      NOT NULL                                    DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE bids

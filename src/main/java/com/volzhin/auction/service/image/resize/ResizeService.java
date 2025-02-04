@@ -14,13 +14,13 @@ import java.io.IOException;
 @Slf4j
 public class ResizeService {
 
-    @Value("${spring.resources.image.max-width-horizontal}")
+    @Value("${spring.image.max-width-horizontal}")
     private int maxWidthHorizontal;
 
-    @Value("${spring.resources.image.max-height-horizontal}")
+    @Value("${spring.image.max-height-horizontal}")
     private int maxHeightHorizontal;
 
-    @Value("${spring.resources.image.max-size-square}")
+    @Value("${spring.image.max-size-square}")
     private int maxSizeSquare;
 
     public MultipartFile resizeImage(MultipartFile file) throws IOException {

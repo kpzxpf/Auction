@@ -1,13 +1,10 @@
 package com.volzhin.auction.dto;
 
-import com.volzhin.auction.entity.Category;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +16,18 @@ public class LotDto {
     @NotBlank
     @Size(min = 1, max = 200)
     private String title;
-    @Max(value = 200)
+    @Size(max = 200)
     private String description;
     @Positive
     private BigDecimal startingPrice;
     @Positive
     private BigDecimal currentPrice;
+    @NotNull(message = "Start time не должен быть null")
+    @FutureOrPresent(message = "Start time должен быть в настоящем или будущем")
+    private LocalDateTime startTime;
+    @NotNull(message = "End time не должен быть null")
+    @Future(message = "End time должен быть в будущем")
+    private LocalDateTime endTime;
     private long seller_id;
-    private Category category;
+    private Long category_id;
 }

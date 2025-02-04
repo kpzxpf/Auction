@@ -52,6 +52,9 @@ public class Lot {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
+
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 

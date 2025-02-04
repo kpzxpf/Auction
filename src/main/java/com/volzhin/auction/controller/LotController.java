@@ -4,6 +4,7 @@ import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.LotService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class LotController {
     private final LotMapper lotMapper;
 
     @PostMapping
-    public LotDto createLot(LotDto lot) {
+    public LotDto createLot(@Valid @RequestBody LotDto lot) {
         Lot savedLot =  lotService.createLot(lotMapper.toEntity(lot));
         return lotMapper.toDto(savedLot);
     }
