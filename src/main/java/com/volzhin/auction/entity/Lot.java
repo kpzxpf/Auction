@@ -42,7 +42,7 @@ public class Lot {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status = Status.ACTIVE;
+    private Status status;
 
     @OneToMany(mappedBy = "lot", orphanRemoval = true)
     private List<Image> images;
@@ -59,6 +59,6 @@ public class Lot {
     private LocalDateTime endTime;
 
     public enum Status {
-        ACTIVE, CLOSED, SOLD
+        active, closed, sold
     }
 }

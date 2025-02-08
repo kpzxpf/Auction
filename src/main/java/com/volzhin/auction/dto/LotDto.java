@@ -29,5 +29,5 @@ public class LotDto {
     @Future(message = "End time должен быть в будущем")
     private LocalDateTime endTime;
     private long seller_id;
-    private Long category_id;
+    private Integer category_id;
 }

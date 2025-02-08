@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/changelog/changeset/auction_initial_V001.sql
+  - include:
+      file: db/changelog/changeset/auction_insert_V001.sql

@@ -6,10 +6,11 @@ import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.LotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/lot")
+@RequestMapping("/lots")
 @RequiredArgsConstructor
 public class LotController {
     private final LotService lotService;
@@ -17,18 +18,24 @@ public class LotController {
 
     @PostMapping
     public LotDto createLot(@Valid @RequestBody LotDto lot) {
-        Lot savedLot =  lotService.createLot(lotMapper.toEntity(lot));
+        Lot savedLot =  lotService.createLot(lot);
         return lotMapper.toDto(savedLot);
     }
 
     @PutMapping
     public LotDto updateLot(LotDto lot) {
-        Lot savedLot =  lotService.updateLot(lotMapper.toEntity(lot));
+        Lot savedLot =  lotService.updateLot(lot);
         return lotMapper.toDto(savedLot);
     }
 
-    @GetMapping
-    public LotDto getLotById(long id) {
+    @GetMapping("/{id}")
+    public LotDto getLotById(@PathVariable Long id) {
         return lotMapper.toDto(lotService.findById(id));
+    }
+
+    @GetMapping
+    public Page<LotDto> getLots(@RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size) {
+        return lotMapper.toDto(lotService.getLots(page, size));
     }
 }
