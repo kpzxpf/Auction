@@ -6,12 +6,10 @@ import com.volzhin.auction.repository.LotRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -42,8 +40,8 @@ public class LotService {
                 });
     }
 
-    public Page<Lot> getLots(int page, int size) {
-        return lotRepository.findAll(PageRequest.of(page, size));
+    public Slice<Lot> getLots(int page, int size) {
+        return lotRepository.findAllLots(PageRequest.of(page, size));
     }
 
     @Transactional

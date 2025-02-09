@@ -6,7 +6,7 @@ import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.LotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,8 +34,8 @@ public class LotController {
     }
 
     @GetMapping
-    public Page<LotDto> getLots(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size) {
+    public Slice<LotDto> getLots(@RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "10") int size) {
         return lotMapper.toDto(lotService.getLots(page, size));
     }
 }

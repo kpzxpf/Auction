@@ -5,8 +5,8 @@ import com.volzhin.auction.entity.Lot;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 
@@ -18,11 +18,9 @@ public interface LotMapper {
 
     List<LotDto> toDto(List<Lot> lots);
 
-    default Page<LotDto> toDto(Page<Lot> lots) {
-        List<LotDto> lotDtos = lots.getContent().stream()
-                .map(this::toDto)
-                .toList();
-
-        return new PageImpl<>(lotDtos, lots.getPageable(), lots.getTotalElements());
+    default Slice<LotDto> toDto(Slice<Lot> lots) {
+        List<LotDto> lotDtos = lots.getContent().stream().map(this::toDto).toList();
+        return new SliceImpl<>(lotDtos, lots.getPageable(), lots.hasNext());
     }
+
 }
