@@ -1,5 +1,7 @@
 package com.volzhin.auction.controller;
 
+import com.volzhin.auction.dto.AuthResponse;
+import com.volzhin.auction.dto.LoginDto;
 import com.volzhin.auction.dto.UserDto;
 import com.volzhin.auction.service.AuthService;
 import jakarta.validation.Valid;
@@ -17,8 +19,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<Void> register(@Valid @RequestBody UserDto userDto) {
         authService.registerUser(userDto);
-        return ResponseEntity.ok("Пользователь зарегистрирован успешно");
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginDto loginDto) {
+        String token = authService.login(loginDto.getUsername(), loginDto.getPassword());
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }

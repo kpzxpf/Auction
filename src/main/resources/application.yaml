@@ -18,6 +18,18 @@ spring:
         order_inserts: true
         order_updates: true
 
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+  mvc:
+    problemdetails:
+      enabled: false
+
+  jwt:
+    secret: "V+X1dN5RxYQkPKF3UcC4d3+3fXwn1wFfJ+qg6Y7KzMo="
+    expiration: 86400000
+
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
