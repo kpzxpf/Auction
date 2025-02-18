@@ -3,6 +3,7 @@ package com.volzhin.auction.service;
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.repository.LotRepository;
+import com.volzhin.auction.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

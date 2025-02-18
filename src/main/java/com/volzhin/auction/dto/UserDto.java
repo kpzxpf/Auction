@@ -1,5 +1,6 @@
 package com.volzhin.auction.dto;
 
+import com.volzhin.auction.entity.user.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,13 +12,19 @@ import lombok.*;
 @Getter
 @Setter
 public class UserDto {
-    @NotBlank(message = "Username не должен быть пустым")
+    private Long id;
+
+    @NotBlank(message = "Username must not be empty")
     @Size(min = 3, max = 120)
     private String username;
-    @NotBlank(message = "Password не должен быть пустым")
+
+    @NotBlank(message = "Password must not be empty")
     @Size(min = 8, max = 120)
     private String password;
-    @NotBlank(message = "Email не должен быть пустым")
-    @Email(message = "Некорректный формат email")
+
+    @NotBlank(message = "Email must not be empty")
+    @Email(message = "Incorrect email format")
     private String email;
+
+    private User.Role role;
 }

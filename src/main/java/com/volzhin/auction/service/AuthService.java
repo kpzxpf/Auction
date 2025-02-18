@@ -1,17 +1,13 @@
 package com.volzhin.auction.service;
 
-import com.volzhin.auction.dto.LoginDto;
 import com.volzhin.auction.dto.UserDto;
-import com.volzhin.auction.entity.User;
+import com.volzhin.auction.entity.user.User;
 import com.volzhin.auction.exception.InvalidPasswordException;
 import com.volzhin.auction.exception.UserNotFoundException;
 import com.volzhin.auction.repository.UserRepository;
 import com.volzhin.auction.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

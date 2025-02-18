@@ -30,7 +30,6 @@ public class JwtTokenProvider {
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
         this.jwtParser = Jwts.parser().verifyWith((SecretKey) signingKey).build();
-        log.info("JWT Token Provider initialized successfully");
     }
 
     public String generateToken(String username) {

@@ -1,6 +1,6 @@
 package com.volzhin.auction.repository;
 
-import com.volzhin.auction.entity.User;
+import com.volzhin.auction.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

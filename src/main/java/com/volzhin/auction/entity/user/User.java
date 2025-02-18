@@ -1,4 +1,4 @@
-package com.volzhin.auction.entity;
+package com.volzhin.auction.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;

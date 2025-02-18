@@ -1,3 +1,5 @@
+console.log("🔍 Проверка токена при загрузке страницы...");
+console.log("🔑 Текущий токен в localStorage:", localStorage.getItem("jwtToken"));
 const API_BASE_URL = "http://localhost:8080";
 
 let currentPage = 0;
@@ -23,14 +25,21 @@ document.addEventListener("DOMContentLoaded", function () {
  */
 function checkUserAuth() {
     const token = localStorage.getItem("jwtToken");
+    const loginLink = document.getElementById("loginLink");
+    const registerLink = document.getElementById("registerLink");
+    const profileLink = document.getElementById("profileLink");
+    const logoutButton = document.getElementById("logoutButton");
 
-    if (!token) {
-        console.log("🔓 No token found, redirecting to login...");
-        if (window.location.pathname !== "/login.html") {
-            window.location.href = "login.html"; // ⏩ Перенаправляем на страницу входа
-        }
+    if (token) {
+        console.log("🔒 Пользователь авторизован");
+        if (loginLink) loginLink.style.display = "none";
+        if (registerLink) registerLink.style.display = "none";
+        if (profileLink) profileLink.style.display = "inline-block";
+        if (logoutButton) logoutButton.style.display = "inline-block";
     } else {
-        console.log("🔒 User is authenticated");
+        console.log("🔓 Пользователь не авторизован");
+        if (profileLink) profileLink.style.display = "none";
+        if (logoutButton) logoutButton.style.display = "none";
     }
 }
 
@@ -43,7 +52,7 @@ async function setupLogin() {
 
     loginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
-        const usernameOrEmail = document.getElementById("usernameOrEmail").value.trim();
+        const usernameOrEmail = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value;
 
         try {
@@ -53,18 +62,18 @@ async function setupLogin() {
                 body: JSON.stringify({ username: usernameOrEmail, password })
             });
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || "Login error");
+            if (!response.ok) throw new Error("Login error");
 
-            // ✅ Сохраняем токен в localStorage
+            const data = await response.json();
             localStorage.setItem("jwtToken", data.token);
             console.log("✅ Login successful, token saved.");
 
-            // ⏩ Перенаправляем пользователя
             window.location.href = "index.html";
+            return data; // ✅ Возвращаем ответ сервера
         } catch (error) {
             document.getElementById("login-message").innerHTML =
                 `<div class="alert alert-danger">${error.message}</div>`;
+            throw error; // ✅ Выбрасываем ошибку, чтобы её можно было обработать
         }
     });
 }
@@ -79,7 +88,7 @@ function setupRegister() {
     registerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         const registerButton = document.getElementById("register-button");
-        registerButton.disabled = true;  // 🔥 Блокируем повторный клик
+        registerButton.disabled = true;
 
         const username = document.getElementById("username").value.trim();
         const email = document.getElementById("email").value.trim();
@@ -100,8 +109,7 @@ function setupRegister() {
                 body: JSON.stringify({ username, email, password })
             });
 
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message || "Registration error");
+            if (!response.ok) throw new Error("Registration error");
 
             document.getElementById("register-message").innerHTML =
                 `<div class="alert alert-success">Registration successful! Now log in.</div>`;
@@ -127,31 +135,33 @@ function logout() {
 /**
  * 📌 Отправляет API-запрос с JWT-токеном
  */
-async function apiRequest(endpoint, method = "GET", body = null, useAuth = true) {
+async function apiRequest(endpoint, method = "GET", body = null) {
     const headers = { "Content-Type": "application/json" };
+    const token = localStorage.getItem("jwtToken");
 
-    if (useAuth) {
-        const token = localStorage.getItem("jwtToken");
-        if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`; // ✅ Передаём токен
+    } else {
+        console.warn("⚠️ No token found in localStorage");
     }
 
-    try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method,
-            headers,
-            credentials: "include",
-            body: body ? JSON.stringify(body) : null
-        });
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method,
+        headers,
+        credentials: "include",
+        body: body ? JSON.stringify(body) : null
+    });
 
-        if (response.status === 403) {
-            console.warn("⛔ Access forbidden! Check security settings.");
-        }
+    console.log("📡 API Request:", endpoint, "🔑 Token:", token);
+    console.log("🔍 Response status:", response.status);
 
-        return response.ok ? response.json() : null;
-    } catch (error) {
-        console.error("❌ API request error:", error);
+    if (response.status === 403) {
+        console.warn("⛔ Access forbidden! Redirecting to login.");
+        logout(); // Выход, если токен не работает
         return null;
     }
+
+    return response.ok ? response.json() : null;
 }
 
 /**
@@ -164,8 +174,7 @@ function loadAuctionLots(page = 0, size = 12, reset = false) {
 
     apiRequest(`/lots?page=${page}&size=${size}`)
         .then(data => {
-            console.log("📦 Server data:", data);
-            if (data && data.content && Array.isArray(data.content)) {
+            if (data && data.content) {
                 displayAuctionLots(data.content, reset);
                 currentPage++;
                 hasNextPage = data.content.length === size;
@@ -173,7 +182,6 @@ function loadAuctionLots(page = 0, size = 12, reset = false) {
                 hasNextPage = false;
             }
             isLoading = false;
-            console.log(`✅ Next page: ${currentPage}, hasNextPage: ${hasNextPage}`);
         })
         .catch(error => {
             console.error("❌ Error loading lots:", error);
@@ -199,7 +207,7 @@ function displayAuctionLots(lots, reset = false) {
 
         const img = document.createElement("img");
         img.className = "card-img-top";
-        img.src = lot.imageUrl && lot.imageUrl.trim() ? lot.imageUrl : "images/default.jpg";
+        img.src = lot.imageUrl || "images/default.jpg";
         img.alt = lot.title;
 
         const cardBody = document.createElement("div");
@@ -232,7 +240,6 @@ function handleScroll() {
     if (isLoading || !hasNextPage) return;
 
     if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
-        console.log("🔥 Scrolled to bottom, loading more lots...");
         loadAuctionLots(currentPage, pageSize);
     }
 }
