@@ -13,12 +13,44 @@ spring:
     properties:
       hibernate:
         jdbc:
-          batch_size: 50
+          batch_size: 12
+          fetch_size: 12
         order_inserts: true
         order_updates: true
+
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+  mvc:
+    problemdetails:
+      enabled: false
+
+  jwt:
+    secret: "V+X1dN5RxYQkPKF3UcC4d3+3fXwn1wFfJ+qg6Y7KzMo="
+    expiration: 86400000
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  password-hash:
+    salt-length: 16
+    hash-length: 32
+    parallelism: 1
+    memory: 65536
+    iterations: 3
+
+  services:
+    s3:
+      endpoint: http://localhost:9000
+      accessKey: user
+      secretKey: password
+      bucketName: projectbucket
+
+  image:
+    max-width-horizontal: 1080
+    max-height-horizontal: 566
+    max-size-square: 1080
+    supported-image-types: "image/png,image/jpeg,image/jpg"
 server:
   port: 8080

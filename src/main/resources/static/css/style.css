@@ -1,0 +1,30 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Верхняя шапка */
+.top-header {
+    font-size: 0.9rem;
+}
+
+/* Стили для слайдера */
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+}
+
+#pagination {
+    margin-top: 30px;  /* Добавить отступ сверху */
+    margin-bottom: 20px;  /* Добавить отступ снизу */
+}
+
+#pagination .btn {
+    margin-right: 10px; /* Добавить отступ справа от кнопок */
+}
+
+
+/* Футер */
+footer {
+    font-size: 0.9rem;
+}

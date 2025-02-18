@@ -17,7 +17,7 @@ CREATE TABLE categories
     description TEXT
 );
 
-CREATE TABLE items
+CREATE TABLE lots
 (
     id             SERIAL PRIMARY KEY,
     title          VARCHAR(100)   NOT NULL,
@@ -28,13 +28,14 @@ CREATE TABLE items
     category_id    INT            REFERENCES categories (id) ON DELETE SET NULL,
     status         VARCHAR(20) CHECK (status IN ('active', 'closed', 'sold')) DEFAULT 'active',
     created_at     TIMESTAMP                                                  DEFAULT CURRENT_TIMESTAMP,
-    end_time       TIMESTAMP      NOT NULL
+    start_time     TIMESTAMP      NOT NULL                                    DEFAULT CURRENT_TIMESTAMP,
+    end_time       TIMESTAMP      NOT NULL                                    DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE bids
 (
     id         SERIAL PRIMARY KEY,
-    item_id    INT            NOT NULL REFERENCES items (id) ON DELETE CASCADE,
+    lot_id    INT            NOT NULL REFERENCES lots (id) ON DELETE CASCADE,
     user_id    INT            NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     amount     NUMERIC(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -44,25 +45,18 @@ CREATE TABLE transactions
 (
     id         SERIAL PRIMARY KEY,
     user_id    INT                                               NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    item_id    INT                                               NOT NULL REFERENCES items (id) ON DELETE CASCADE,
+    lot_id    INT                                               NOT NULL REFERENCES lots (id) ON DELETE CASCADE,
     amount     NUMERIC(10, 2)                                    NOT NULL,
     type       VARCHAR(20) CHECK (type IN ('payment', 'refund')) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE messages
-(
-    id          SERIAL PRIMARY KEY,
-    sender_id   INT  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    receiver_id INT  NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    content     TEXT NOT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE images
 (
     id          SERIAL PRIMARY KEY,
-    item_id     INT          NOT NULL REFERENCES items (id) ON DELETE CASCADE,
-    url         VARCHAR(255) NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    size        INT NOT NULL,
+    lot_id     INT          NOT NULL REFERENCES lots (id) ON DELETE CASCADE,
+    key         VARCHAR(50) NOT NULL,
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
