@@ -1,5 +1,6 @@
 package com.volzhin.auction.dto;
 
+import com.volzhin.auction.entity.Lot;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class LotDto {
     @NotNull(message = "End time не должен быть null")
     @Future(message = "End time должен быть в будущем")
     private LocalDateTime endTime;
+    private Lot.Status status;
     private long seller_id;
     private Integer category_id;
 }

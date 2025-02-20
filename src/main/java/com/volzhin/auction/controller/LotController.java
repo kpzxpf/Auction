@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/lots")
 @RequiredArgsConstructor
@@ -37,5 +39,10 @@ public class LotController {
     public Slice<LotDto> getLots(@RequestParam(defaultValue = "0") int page,
                                  @RequestParam(defaultValue = "10") int size) {
         return lotMapper.toDto(lotService.getLots(page, size));
+    }
+
+    @GetMapping("user/{userId}")
+    public List<LotDto> getLotsByUserId(@PathVariable Long userId) {
+        return lotMapper.toDto(lotService.getLotsByUserId(userId));
     }
 }

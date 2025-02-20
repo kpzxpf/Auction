@@ -9,9 +9,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Long> {
     @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "12"))
     @Query("SELECT l FROM Lot l")
     Slice<Lot> findAllLots(Pageable pageable);
+
+    List<Lot> findLotsBySellerId(Long userId);
 }

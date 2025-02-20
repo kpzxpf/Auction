@@ -12,6 +12,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,6 @@ public class LotService {
     @Transactional
     public Lot updateLot(LotDto lotDto) {
 
-
         return lotRepository.save(lotDtoToLot(lotDto));
     }
 
@@ -41,6 +42,7 @@ public class LotService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public Slice<Lot> getLots(int page, int size) {
         return lotRepository.findAllLots(PageRequest.of(page, size));
     }
@@ -48,6 +50,11 @@ public class LotService {
     @Transactional
     public Lot saveLot(Lot lot) {
         return lotRepository.save(lot);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Lot> getLotsByUserId(long userId) {
+        return lotRepository.findLotsBySellerId(userId);
     }
 
     private Lot lotDtoToLot(LotDto lotDto) {
