@@ -2,295 +2,34 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Личный кабинет</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Профиль | Аукцион.ру</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #333;
-        }
-
-        .profile-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            margin-top: 60px;
-        }
-
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid #3498db;
-            object-fit: cover;
-            margin-right: 20px;
-            margin-left: 60px;
-        }
-
-        .profile-details {
-            flex: 1;
-        }
-
-        .profile-details h2 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
-        }
-
-        .profile-details p {
-            margin: 10px 0;
-            color: #666;
-        }
-
-        .lot-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            border-radius: 10px;
-            overflow: hidden;
-            background: white;
-            margin-bottom: 20px;
-        }
-
-        .lot-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .lot-card img {
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .lot-card .card-body {
-            padding: 15px;
-        }
-
-        .btn-primary {
-            background-color: #3498db;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 20px;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        .filters {
-            margin-bottom: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .back-arrow {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: #3498db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            z-index: 10;
-        }
-
-        .back-arrow:hover {
-            background-color: #2980b9;
-        }
-
-        .back-arrow i {
-            color: white;
-            font-size: 20px;
-        }
-
-        .back-arrow .fallback-arrow {
-            display: none;
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Если Bootstrap Icons не работает, показываем резервное изображение */
-        @media (max-width: 1px) {
-            .back-arrow i {
-                display: none;
-            }
-            .back-arrow .fallback-arrow {
-                display: block;
-            }
-        }
-
-        .container {
-            position: relative;
-            max-width: 1200px;
-            margin-top: 20px;
-        }
-
-        .no-lots {
-            text-align: center;
-            color: #666;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/profile.js" defer></script>
 </head>
 <body>
-<div class="container mt-5 mb-5">
-    <div id="backArrow" class="back-arrow" title="Выйти">
-        <i class="bi bi-arrow-left"></i>
-        <img src="images/arrow-left.png" class="fallback-arrow" alt="Назад">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a class="navbar-brand" href="index.html"><i class="fas fa-gavel"></i> Аукцион.ру</a>
     </div>
+</nav>
 
-    <div class="profile-container d-flex align-items-center">
+<div class="container mt-5">
+    <h2 class="text-center">Личный кабинет</h2>
+    <div class="profile-container mt-4">
         <img src="images/default.jpg" class="profile-avatar" alt="Аватар пользователя">
         <div class="profile-details">
-            <h2>${user.username}</h2>
-            <p><strong>ID:</strong> ${user.id}</p>
-            <p><strong>Баланс:</strong> <span class="text-success">${user.balance || 0}₽</span></p>
+            <h3 id="profile-username"></h3>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Баланс:</strong> <span id="profile-balance" class="text-success"></span></p>
         </div>
     </div>
-
-    <div class="filters mt-4">
-        <div class="btn-group" role="group" aria-label="Фильтры лотов">
-            <button class="btn btn-outline-primary filter-btn" data-filter="all">Все лоты</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="active">Активные</button>
-            <button class="btn btn-outline-primary filter-btn" data-filter="closed">Завершённые</button>
-        </div>
-    </div>
-
-    <div id="lots-container" class="row mt-3"></div>
+    <button id="logoutButton" class="btn btn-danger w-100 mt-3">Выйти</button>
 </div>
 
-<script>
-    // Глобальная переменная для хранения данных пользователя
-    let currentUser = null;
-
-    async function loadProfile() {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) {
-            window.location.href = "login.html";
-            return;
-        }
-
-        try {
-            const profileResponse = await fetch("http://localhost:8080/user/profile", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!profileResponse.ok) {
-                throw new Error("Ошибка загрузки профиля");
-            }
-
-            const user = await profileResponse.json();
-            currentUser = user;
-            document.querySelector('.profile-details h2').textContent = user.username;
-            document.querySelector('.profile-details').innerHTML = `
-                <h2>${user.username}</h2>
-                <p><strong>Баланс:</strong> <span class="text-success">${user.balance || 0}₽</span></p>
-            `;
-            await loadUserLots(user.id, "lots-container");
-        } catch (error) {
-            console.error(error);
-            window.location.href = "login.html";
-        }
-    }
-
-    async function loadUserLots(userId, elementId) {
-        const token = localStorage.getItem("jwtToken");
-
-        try {
-            const response = await fetch(`http://localhost:8080/lots/user/${userId}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Ошибка загрузки лотов для пользователя ${userId}`);
-            }
-
-            const lots = await response.json();
-            const container = document.getElementById(elementId);
-            container.innerHTML = "";
-
-            let filteredLots = lots;
-            if (currentFilter) {
-                filteredLots = lots.filter(lot => {
-                    if (currentFilter === "all") return true;
-                    if (currentFilter === "active") return lot.status === "active";
-                    if (currentFilter === "closed") return lot.status === "closed";
-                    return true;
-                });
-            }
-
-            if (filteredLots.length === 0) {
-                container.innerHTML = `
-                    <div class="col-12 no-lots">
-                        Нет лотов для отображения
-                    </div>`;
-                return;
-            }
-
-            filteredLots.forEach(lot => {
-                const lotElement = document.createElement("div");
-                lotElement.className = "col-md-4 col-sm-6 mb-4";
-                lotElement.innerHTML = `
-                    <div class="lot-card">
-                        <img src="${lot.imageUrl || "default.jpg"}" class="card-img-top" alt="${lot.title}">
-                        <div class="card-body">
-                            <h5 class="card-title mb-2">${lot.title}</h5>
-                            <p class="card-text mb-3"><strong>Цена:</strong> <span class="text-primary">${lot.currentPrice}₽</span></p>
-                            <p class="card-text"><strong>Статус:</strong> ${lot.status === "active" ? "Активный" : "Завершён"}</p>
-                            <a href="lot.html?id=${lot.id}" class="btn btn-primary">Подробнее</a>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(lotElement);
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    // Глобальная переменная для текущего фильтра
-    let currentFilter = "all";
-
-    document.addEventListener("DOMContentLoaded", loadProfile);
-
-    // Обработчики фильтров
-    document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            currentFilter = this.getAttribute('data-filter');
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            if (currentUser) {
-                loadUserLots(currentUser.id, 'lots-container');
-            }
-        });
-    });
-
-    document.getElementById("backArrow").addEventListener("click", function () {
-        localStorage.removeItem("jwtToken");
-        window.location.href = "login.html";
-    });
-</script>
+<footer class="bg-dark text-light text-center py-3 mt-5">
+    <p>&copy; 2025 Аукцион.ру. Все права защищены.</p>
+</footer>
 </body>
 </html>

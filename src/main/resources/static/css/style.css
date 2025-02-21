@@ -1,30 +1,229 @@
-/* Общие стили */
 body {
-    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333;
 }
 
-/* Верхняя шапка */
-.top-header {
-    font-size: 0.9rem;
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease-in-out forwards;
 }
 
-/* Стили для слайдера */
-.carousel-caption {
-    background-color: rgba(0, 0, 0, 0.5);
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.navbar {
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.navbar:hover {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../images/banner.jpg') center/cover;
+    padding: 100px 0;
+    text-align: center;
+    color: white;
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 20px;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.category-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+.category-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    list-style: none;
     padding: 10px;
+    min-width: 150px;
+    z-index: 1000;
 }
 
-#pagination {
-    margin-top: 30px;  /* Добавить отступ сверху */
-    margin-bottom: 20px;  /* Добавить отступ снизу */
+.dropdown-menu li {
+    padding: 8px;
+    cursor: pointer;
 }
 
-#pagination .btn {
-    margin-right: 10px; /* Добавить отступ справа от кнопок */
+.dropdown-menu li:hover {
+    background: #f8f9fa;
 }
 
-
-/* Футер */
-footer {
-    font-size: 0.9rem;
+/* Profile Page Styles */
+.profile-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 60px;
 }
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid #3498db;
+    object-fit: cover;
+    margin-right: 20px;
+    margin-left: 60px;
+}
+
+.profile-details {
+    flex: 1;
+}
+
+.profile-details h2 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.profile-details p {
+    margin: 10px 0;
+    color: #666;
+}
+
+/* Category Dropdown */
+.category-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.category-dropdown:hover .category-menu {
+    display: block;
+}
+
+.category-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    color: #007bff;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+.category-dropdown .dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    list-style: none;
+    padding: 10px;
+    min-width: 150px;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.category-dropdown:hover .dropdown-menu {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Модальные окна */
+.modal {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, visibility 0.3s;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.category-menu a {
+    display: block;
+    padding: 8px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.category-menu a:hover {
+    background: #f8f9fa;
+}
+
+.lot-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+    margin-bottom: 20px;
+}
+
+.lot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+.lot-card img {
+     height: 200px;
+     object-fit: cover;
+ }
+
