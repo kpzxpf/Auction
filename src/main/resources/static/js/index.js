@@ -1,23 +1,72 @@
+let currentPage = 0;
+let isLoading = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     loadAuctionLots();
     setupCategoryDropdown();
+    setupInfiniteScroll();
+
+    const token = localStorage.getItem("jwtToken");
+    const profileLink = document.getElementById("profileLink");
+    const logoutButton = document.getElementById("logoutButton");
+    const loginLink = document.getElementById("loginLink");
+    const registerLink = document.getElementById("registerLink");
+
+    function updateNavigation() {
+        if (token) {
+            profileLink.style.display = "block";
+            logoutButton.style.display = "block";
+            loginLink.style.display = "none";
+            registerLink.style.display = "none";
+        } else {
+            profileLink.style.display = "none";
+            logoutButton.style.display = "none";
+            loginLink.style.display = "block";
+            registerLink.style.display = "block";
+        }
+    }
+
+    updateNavigation();
+
+
+    logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("jwtToken");
+        updateNavigation();
+    });
+
+
+    profileLink.addEventListener("click", (event) => {
+        if (!token) {
+            event.preventDefault();
+        }
+    });
 });
 
-async function loadAuctionLots(category = "all") {
+async function loadAuctionLots(category = "all", page = 0) {
+    if (isLoading) return;
+    isLoading = true;
+
     try {
-        const response = await fetch(`http://localhost:8080/lots?category=${category}`);
+        const response = await fetch(`http://localhost:8080/lots?category=${category}&page=${page}&size=9`);
         const lots = await response.json();
-        displayAuctionLots(lots);
+
+        if (lots.length > 0) {
+            displayAuctionLots(lots);
+            currentPage = page;
+        } else {
+            console.log("Больше лотов нет.");
+        }
     } catch (error) {
         console.error("❌ Error loading auction lots:", error);
+    } finally {
+        isLoading = false;
     }
 }
 
 function displayAuctionLots(lots) {
     const lotGrid = document.getElementById("lot-grid");
-    lotGrid.innerHTML = "";
 
-    if (lots.length === 0) {
+    if (lots.length === 0 && currentPage === 0) {
         lotGrid.innerHTML = "<p class='text-center'>Нет доступных лотов.</p>";
         return;
     }
@@ -44,7 +93,20 @@ function setupCategoryDropdown() {
         link.addEventListener("click", (event) => {
             event.preventDefault();
             const category = event.target.dataset.category;
-            loadAuctionLots(category);
+            currentPage = 0;
+            document.getElementById("lot-grid").innerHTML = "";
+            loadAuctionLots(category, 0);
         });
     });
 }
+
+function setupInfiniteScroll() {
+    window.addEventListener("scroll", () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+        if (scrollTop + clientHeight >= scrollHeight - 10 && !isLoading) {
+            loadAuctionLots("all", currentPage + 1);
+        }
+    });
+}
+

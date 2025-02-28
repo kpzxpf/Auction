@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,6 +27,8 @@ public class UserDto {
     @NotBlank(message = "Email must not be empty")
     @Email(message = "Incorrect email format")
     private String email;
+
+    private BigDecimal balance;
 
     private User.Role role;
 }

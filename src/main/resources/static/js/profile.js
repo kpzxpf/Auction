@@ -1,37 +1,54 @@
-document.addEventListener("DOMContentLoaded", () => {
-    loadUserProfile();
-    loadUserLots();
-});
-
-async function loadUserProfile() {
+document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("jwtToken");
     if (!token) {
         window.location.href = "login.html";
         return;
     }
 
+    // Загружаем профиль пользователя и сохраняем userId
+    await loadUserProfile();
+
+    // Загружаем лоты пользователя
+    await loadUserLots();
+});
+
+let currentUserId = null;
+
+async function loadUserProfile() {
     try {
         const response = await fetch("http://localhost:8080/user/profile", {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${localStorage.getItem("jwtToken")}` }
         });
         if (!response.ok) throw new Error("Ошибка загрузки профиля");
 
         const user = await response.json();
-        document.getElementById("profile-name").textContent = user.username;
-        document.getElementById("profile-balance").textContent = `${user.balance || 0}₽`;
+        currentUserId = user.id;
+
+        const profileUsername = document.getElementById("profile-username");
+        const profileEmail = document.getElementById("profile-email");
+        const profileBalance = document.getElementById("profile-balance");
+
+        if (profileUsername && profileEmail && profileBalance) {
+            profileUsername.textContent = user.username;
+            profileEmail.textContent = user.email;
+            profileBalance.textContent = `${user.balance || 0}₽`;
+        } else {
+            console.error("Элементы профиля не найдены в DOM");
+        }
     } catch (error) {
         console.error(error);
-        window.location.href = "login.html";
     }
 }
 
 async function loadUserLots() {
-    const token = localStorage.getItem("jwtToken");
-    if (!token) return;
+    if (!currentUserId) {
+        console.error("ID пользователя не найден");
+        return;
+    }
 
     try {
-        const response = await fetch("http://localhost:8080/lots/user", {
-            headers: { "Authorization": `Bearer ${token}` }
+        const response = await fetch(`http://localhost:8080/lots/user/${currentUserId}`, {
+            headers: { "Authorization": `Bearer ${localStorage.getItem("jwtToken")}` }
         });
         if (!response.ok) throw new Error("Ошибка загрузки лотов");
 
@@ -44,6 +61,11 @@ async function loadUserLots() {
 
 function displayUserLots(lots) {
     const container = document.getElementById("user-lots");
+    if (!container) {
+        console.error("Элемент 'user-lots' не найден в DOM");
+        return;
+    }
+
     container.innerHTML = "";
 
     if (lots.length === 0) {

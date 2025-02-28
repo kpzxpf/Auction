@@ -8,7 +8,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +42,7 @@ public class LotService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<Lot> getLots(int page, int size) {
+    public List<Lot> getLots(int page, int size) {
         return lotRepository.findAllLots(PageRequest.of(page, size));
     }
 
