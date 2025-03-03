@@ -227,3 +227,18 @@ body {
      object-fit: cover;
  }
 
+#auction-detail .card-img-top {
+    border-radius: 0.25rem 0.25rem 0 0;
+}
+
+#auction-detail .alert {
+    margin-top: 2rem;
+}
+
+#bid-form {
+    margin-top: 2rem;
+    padding: 2rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+

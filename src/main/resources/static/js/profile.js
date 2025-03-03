@@ -1,14 +1,19 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("jwtToken");
+    const logoutButton = document.getElementById("logoutButton");
+
     if (!token) {
         window.location.href = "login.html";
         return;
     }
 
-    // Загружаем профиль пользователя и сохраняем userId
+    logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("jwtToken");
+        window.location.href = "index.html";
+    });
+
     await loadUserProfile();
 
-    // Загружаем лоты пользователя
     await loadUserLots();
 });
 

@@ -10,25 +10,49 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadAuctionDetails(lotId) {
     try {
         const response = await fetch(`http://localhost:8080/lots/${lotId}`);
-        if (!response.ok) throw new Error("Ошибка загрузки лота");
+        if (!response.ok) throw new Error("Лот не найден");
 
         const lot = await response.json();
         displayAuctionDetails(lot);
+
     } catch (error) {
-        console.error(error);
+        showError(error.message);
     }
 }
 
 function displayAuctionDetails(lot) {
-    const auctionDetail = document.getElementById("auction-detail");
+    const auctionDetail = document.getElementById("lot");
     auctionDetail.innerHTML = `
         <div class="card">
-            <img src="${lot.imageUrl || 'images/default.jpg'}" class="card-img-top" alt="${lot.title}">
+            <img src="${lot.imageUrl || 'images/default.jpg'}" 
+                 class="card-img-top" 
+                 alt="${lot.title}"
+                 style="max-height: 500px; object-fit: cover">
             <div class="card-body">
-                <h2 class="card-title">${lot.title}</h2>
-                <p class="card-text"><strong>Описание:</strong> ${lot.description}</p>
-                <p class="card-text"><strong>Текущая цена:</strong> ${lot.currentPrice}₽</p>
-                <p class="card-text"><strong>Дата окончания:</strong> ${new Date(lot.endTime).toLocaleString()}</p>
+                <h1 class="card-title mb-4">${lot.title}</h1>
+                <div class="mb-4">
+                    <h4><i class="fas fa-info-circle"></i> Описание</h4>
+                    <p class="card-text">${lot.description || 'Нет описания'}</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-coins"></i> Текущая цена</h4>
+                        <p class="text-success fs-3">${lot.currentPrice}₽</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-clock"></i> Дата окончания</h4>
+                        <p class="text-danger fs-5">${new Date(lot.endTime).toLocaleString()}</p>
+                    </div>
+                </div>
+                
+                ${lot.status === 'ACTIVE' ? `
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-hourglass-start"></i> Аукцион активен
+                </div>` : `
+                <div class="alert alert-danger mt-4">
+                    <i class="fas fa-ban"></i> Аукцион завершен
+                </div>`}
             </div>
         </div>
     `;

@@ -6,13 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCategoryDropdown();
     setupInfiniteScroll();
 
-    const token = localStorage.getItem("jwtToken");
+
     const profileLink = document.getElementById("profileLink");
     const logoutButton = document.getElementById("logoutButton");
     const loginLink = document.getElementById("loginLink");
     const registerLink = document.getElementById("registerLink");
 
     function updateNavigation() {
+        const token = localStorage.getItem("jwtToken");
         if (token) {
             profileLink.style.display = "block";
             logoutButton.style.display = "block";
@@ -80,7 +81,7 @@ function displayAuctionLots(lots) {
                 <div class="card-body">
                     <h5 class="card-title">${lot.title}</h5>
                     <p class="card-text"><strong>Цена:</strong> ${lot.currentPrice}₽</p>
-                    <a href="auction.html?id=${lot.id}" class="btn btn-primary">Подробнее</a>
+                    <a href="lot.html?id=${lot.id}" class="btn btn-primary">Подробнее</a>
                 </div>
             </div>
         `;

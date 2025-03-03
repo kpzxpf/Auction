@@ -110,12 +110,3 @@ async function setupRegister() {
         }
     });
 }
-
-/**
- * 📌 Выход из аккаунта
- */
-function logout() {
-    localStorage.removeItem("jwtToken");
-    console.log("🚪 Пользователь вышел из системы.");
-    window.location.href = "login.html";
-}
