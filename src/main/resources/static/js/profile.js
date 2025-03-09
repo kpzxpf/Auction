@@ -12,6 +12,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "index.html";
     });
 
+    const addLotButton = document.getElementById("add-lot-btn");
+    addLotButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentUserId) {
+            window.location.href = `add-lot.html?seller_id=${currentUserId}`;
+        } else {
+            alert("ID пользователя не загружен. Попробуйте обновить страницу.");
+        }
+    });
+
     await loadUserProfile();
 
     await loadUserLots();

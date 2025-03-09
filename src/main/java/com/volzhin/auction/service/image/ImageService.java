@@ -4,6 +4,7 @@ import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.exception.FileException;
 import com.volzhin.auction.repository.ImageRepository;
+import com.volzhin.auction.repository.LotRepository;
 import com.volzhin.auction.service.LotService;
 import com.volzhin.auction.service.image.resize.ResizeService;
 import com.volzhin.auction.service.image.s3.S3Service;
@@ -24,8 +25,8 @@ import java.util.List;
 public class ImageService {
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
-    private final LotService lotService;
     private final ResizeService resizeService;
+    private final LotService lotService;
 
 
     @Transactional

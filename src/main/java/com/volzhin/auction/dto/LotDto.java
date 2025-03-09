@@ -31,5 +31,6 @@ public class LotDto {
     private LocalDateTime endTime;
     private Lot.Status status;
     private long seller_id;
-    private Integer category_id;
+    @NotNull
+    private int category_id;
 }

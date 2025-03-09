@@ -6,7 +6,9 @@ import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.LotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,9 +19,11 @@ public class LotController {
     private final LotService lotService;
     private final LotMapper lotMapper;
 
-    @PostMapping
-    public LotDto createLot(@Valid @RequestBody LotDto lot) {
-        Lot savedLot =  lotService.createLot(lot);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public LotDto createLot(
+            @Valid @ModelAttribute LotDto lot,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        Lot savedLot = lotService.createLot(lot, files);
         return lotMapper.toDto(savedLot);
     }
 

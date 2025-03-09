@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,8 +23,11 @@ public class LotService {
     private final UserService userService;
 
     @Transactional
-    public Lot createLot(LotDto lotDto) {
-        return lotRepository.save(lotDtoToLot(lotDto));
+    public Lot createLot(LotDto lotDto, List<MultipartFile> images) {
+        lotDto.setCurrentPrice(lotDto.getStartingPrice());
+
+        Lot lot = lotRepository.save(lotDtoToLot(lotDto));
+        return lot;
     }
 
     @Transactional
@@ -46,14 +50,14 @@ public class LotService {
         return lotRepository.findAllLots(PageRequest.of(page, size));
     }
 
-    @Transactional
-    public Lot saveLot(Lot lot) {
-        return lotRepository.save(lot);
-    }
-
     @Transactional(readOnly = true)
     public List<Lot> getLotsByUserId(long userId) {
         return lotRepository.findLotsBySellerId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Lot saveLot(Lot lot) {
+        return lotRepository.save(lot);
     }
 
     private Lot lotDtoToLot(LotDto lotDto) {

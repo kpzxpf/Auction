@@ -1,113 +1,179 @@
 let currentPage = 0;
 let isLoading = false;
+let selectedCategoryId = 'all';
+let hasMore = true;
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadCategories();
+    setupEventListeners();
     loadAuctionLots();
-    setupCategoryDropdown();
-    setupInfiniteScroll();
-
-
-    const profileLink = document.getElementById("profileLink");
-    const logoutButton = document.getElementById("logoutButton");
-    const loginLink = document.getElementById("loginLink");
-    const registerLink = document.getElementById("registerLink");
-
-    function updateNavigation() {
-        const token = localStorage.getItem("jwtToken");
-        if (token) {
-            profileLink.style.display = "block";
-            logoutButton.style.display = "block";
-            loginLink.style.display = "none";
-            registerLink.style.display = "none";
-        } else {
-            profileLink.style.display = "none";
-            logoutButton.style.display = "none";
-            loginLink.style.display = "block";
-            registerLink.style.display = "block";
-        }
-    }
-
     updateNavigation();
-
-
-    logoutButton.addEventListener("click", () => {
-        localStorage.removeItem("jwtToken");
-        updateNavigation();
-    });
-
-
-    profileLink.addEventListener("click", (event) => {
-        if (!token) {
-            event.preventDefault();
-        }
-    });
 });
 
-async function loadAuctionLots(category = "all", page = 0) {
-    if (isLoading) return;
+function setupEventListeners() {
+    window.addEventListener('scroll', handleScroll);
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
+    document.getElementById('categoryList').addEventListener('click', handleCategorySelect);
+}
+
+async function loadCategories() {
+    try {
+        const response = await fetch('http://localhost:8080/categories');
+        const categories = await response.json();
+        populateCategories(categories);
+    } catch (error) {
+        console.error('Ошибка загрузки категорий:', error);
+    }
+}
+
+function populateCategories(categories) {
+    const categoryList = document.getElementById('categoryList');
+    categories.forEach(category => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <a class="dropdown-item" href="#" data-category-id="${category.id}">
+                ${category.name}
+            </a>
+        `;
+        categoryList.appendChild(li);
+    });
+}
+
+async function loadAuctionLots() {
+    if (isLoading || !hasMore) return;
     isLoading = true;
+    showLoading();
 
     try {
-        const response = await fetch(`http://localhost:8080/lots?category=${category}&page=${page}&size=9`);
+        const url = new URL('http://localhost:8080/lots');
+        url.searchParams.append('page', currentPage);
+        url.searchParams.append('size', 9);
+        if (selectedCategoryId !== 'all') {
+            url.searchParams.append('categoryId', selectedCategoryId);
+        }
+
+        const response = await fetch(url);
         const lots = await response.json();
 
-        if (lots.length > 0) {
-            displayAuctionLots(lots);
-            currentPage = page;
-        } else {
-            console.log("Больше лотов нет.");
+        if (lots.length === 0) {
+            hasMore = false;
+            if (currentPage === 0) showNoLotsMessage();
+            return;
         }
+
+        displayAuctionLots(lots);
+        currentPage++;
     } catch (error) {
-        console.error("❌ Error loading auction lots:", error);
+        console.error('Ошибка загрузки лотов:', error);
     } finally {
         isLoading = false;
+        hideLoading();
     }
 }
 
 function displayAuctionLots(lots) {
-    const lotGrid = document.getElementById("lot-grid");
-
-    if (lots.length === 0 && currentPage === 0) {
-        lotGrid.innerHTML = "<p class='text-center'>Нет доступных лотов.</p>";
-        return;
-    }
+    const lotGrid = document.getElementById('lot-grid');
 
     lots.forEach(lot => {
-        const lotElement = document.createElement("div");
-        lotElement.className = "col-md-4 mb-4";
-        lotElement.innerHTML = `
-            <div class="card">
-                <img src="${lot.imageUrl || 'images/default.jpg'}" class="card-img-top" alt="${lot.title}">
-                <div class="card-body">
-                    <h5 class="card-title">${lot.title}</h5>
-                    <p class="card-text"><strong>Цена:</strong> ${lot.currentPrice}₽</p>
-                    <a href="lot.html?id=${lot.id}" class="btn btn-primary">Подробнее</a>
-                </div>
-            </div>
-        `;
+        const lotElement = createLotElement(lot);
         lotGrid.appendChild(lotElement);
     });
 }
 
-function setupCategoryDropdown() {
-    document.querySelectorAll(".category-menu a").forEach(link => {
-        link.addEventListener("click", (event) => {
-            event.preventDefault();
-            const category = event.target.dataset.category;
-            currentPage = 0;
-            document.getElementById("lot-grid").innerHTML = "";
-            loadAuctionLots(category, 0);
-        });
-    });
+function createLotElement(lot) {
+    const col = document.createElement('div');
+    col.className = 'col';
+
+    col.innerHTML = `
+        <div class="card h-100 shadow-sm">
+            <img src="${lot.images?.[0]?.url || 'images/default.jpg'}" 
+                 class="card-img-top" 
+                 alt="${lot.title}"
+                 style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">${lot.title}</h5>
+                <p class="card-text text-muted">${lot.description || ''}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-primary">${lot.category?.name || 'Без категории'}</span>
+                    <h5 class="text-success">${lot.currentPrice.toFixed(2)}₽</h5>
+                </div>
+                <a href="lot.html?id=${lot.id}" class="stretched-link"></a>
+            </div>
+            <div class="card-footer bg-transparent">
+                <small class="text-muted">
+                    Окончание: ${new Date(lot.endTime).toLocaleDateString()}
+                </small>
+            </div>
+        </div>
+    `;
+    return col;
 }
 
-function setupInfiniteScroll() {
-    window.addEventListener("scroll", () => {
-        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+function handleCategorySelect(event) {
+    const categoryItem = event.target.closest('[data-category-id]');
+    if (!categoryItem) return;
 
-        if (scrollTop + clientHeight >= scrollHeight - 10 && !isLoading) {
-            loadAuctionLots("all", currentPage + 1);
-        }
-    });
+    const categoryId = categoryItem.dataset.categoryId;
+    const categoryName = categoryItem.textContent.trim();
+
+    selectedCategoryId = categoryId;
+    currentPage = 0;
+    hasMore = true;
+
+    document.getElementById('lot-grid').innerHTML = '';
+    document.getElementById('categoryDropdown').textContent = categoryName;
+
+    loadAuctionLots();
 }
 
+function handleScroll() {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+        loadAuctionLots();
+    }
+}
+
+function updateNavigation() {
+    const token = localStorage.getItem('jwtToken');
+    const elements = {
+        profileLink: document.getElementById('profileLink'),
+        logoutButton: document.getElementById('logoutButton'),
+        loginLink: document.getElementById('loginLink'),
+        registerLink: document.getElementById('registerLink')
+    };
+
+    if (token) {
+        elements.profileLink.style.display = 'block';
+        elements.logoutButton.style.display = 'block';
+        elements.loginLink.style.display = 'none';
+        elements.registerLink.style.display = 'none';
+    } else {
+        elements.profileLink.style.display = 'none';
+        elements.logoutButton.style.display = 'none';
+        elements.loginLink.style.display = 'block';
+        elements.registerLink.style.display = 'block';
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('jwtToken');
+    updateNavigation();
+    window.location.reload();
+}
+
+function showLoading() {
+    document.getElementById('loading').style.display = 'block';
+}
+
+function hideLoading() {
+    document.getElementById('loading').style.display = 'none';
+}
+
+function showNoLotsMessage() {
+    const lotGrid = document.getElementById('lot-grid');
+    lotGrid.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted">Нет доступных лотов в выбранной категории</h4>
+        </div>
+    `;
+}
