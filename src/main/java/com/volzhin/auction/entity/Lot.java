@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,7 +47,7 @@ public class Lot {
     private Status status;
 
     @OneToMany(mappedBy = "lot", orphanRemoval = true)
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

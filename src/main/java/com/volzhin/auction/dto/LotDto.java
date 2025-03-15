@@ -23,11 +23,11 @@ public class LotDto {
     private BigDecimal startingPrice;
     @Positive
     private BigDecimal currentPrice;
-    @NotNull(message = "Start time не должен быть null")
-    @FutureOrPresent(message = "Start time должен быть в настоящем или будущем")
+    @NotNull
+    @FutureOrPresent
     private LocalDateTime startTime;
-    @NotNull(message = "End time не должен быть null")
-    @Future(message = "End time должен быть в будущем")
+    @NotNull
+    @Future
     private LocalDateTime endTime;
     private Lot.Status status;
     private long sellerId;

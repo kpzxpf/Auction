@@ -19,11 +19,12 @@ public class LotController {
     private final LotService lotService;
     private final LotMapper lotMapper;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping
     public LotDto createLot(
             @Valid @ModelAttribute LotDto lot,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         Lot savedLot = lotService.createLot(lot, files);
+
         return lotMapper.toDto(savedLot);
     }
 

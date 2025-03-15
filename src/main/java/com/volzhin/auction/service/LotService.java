@@ -1,8 +1,10 @@
 package com.volzhin.auction.service;
 
 import com.volzhin.auction.dto.LotDto;
+import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.repository.LotRepository;
+import com.volzhin.auction.service.image.ImageService;
 import com.volzhin.auction.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +23,22 @@ public class LotService {
     private final LotRepository lotRepository;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final ImageService imageService;
 
     @Transactional
-    public Lot createLot(LotDto lotDto, List<MultipartFile> images) {
-        lotDto.setCurrentPrice(lotDto.getStartingPrice());
+    public Lot createLot(LotDto lotDto, List<MultipartFile> files) {
+        Lot lot = lotDtoToLot(lotDto);
+        lot.setCurrentPrice(lotDto.getStartingPrice());
 
-        Lot lot = lotRepository.save(lotDtoToLot(lotDto));
-        return lot;
+        lot = lotRepository.save(lot);
+        List<Image> images = imageService.addImages(lot, files);
+        lot.setImages(images);
+
+        return lotRepository.save(lot);
     }
 
     @Transactional
     public Lot updateLot(LotDto lotDto) {
-
         return lotRepository.save(lotDtoToLot(lotDto));
     }
 

@@ -25,15 +25,7 @@ public class ImageController {
     }*/
 
 
-    @PostMapping(value = "/{lotId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void saveImage(@PathVariable long lotId, @RequestParam("file") MultipartFile file) {
-        imageService.addImage(lotId, file);
-    }
 
-    @PostMapping(value = "/{lotId}/list", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void saveImages(@PathVariable long lotId, @RequestParam("files") List<MultipartFile> files) {
-        imageService.addImages(lotId, files);
-    }
 
     @DeleteMapping("/{lotId}")
     public void deleteImage(@PathVariable long lotId) {}

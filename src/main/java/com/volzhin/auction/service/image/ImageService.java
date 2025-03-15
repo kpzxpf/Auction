@@ -26,42 +26,23 @@ public class ImageService {
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
     private final ResizeService resizeService;
-    private final LotService lotService;
-
 
     @Transactional
-    public Image addImage(Long lotId, MultipartFile imageFile) {
-        Lot lot = lotService.findById(lotId);
-
+    public void addImage(Lot lot, MultipartFile imageFile) {
         MultipartFile suitableImage = resizeFile(imageFile);
         Image image = s3Service.uploadFile(
-                suitableImage, createFolder(lotId, imageFile.getContentType()));
+                suitableImage, createFolder(lot.getId(), imageFile.getContentType()));
 
         image.setLot(lot);
         image = imageRepository.save(image);
         lot.getImages().add(image);
-        lotService.saveLot(lot);
-
-        return image;
     }
 
     @Transactional
-    public List<Image> addImages(Long lotId, List<MultipartFile> imageFiles) {
-        Lot lot = lotService.findById(lotId);
-
+    public List<Image> addImages(Lot lot, List<MultipartFile> imageFiles) {
         List<MultipartFile> suitableImages = resizeFiles(imageFiles);
-        List<Image> images = s3Service.uploadFiles(
-                suitableImages, createFolder(lotId, imageFiles.stream().findAny().get().getContentType()));
-
-        images.forEach(image -> {
-            image.setLot(lot);
-            imageRepository.save(image);
-        });
-
-        lot.getImages().addAll(images);
-        lotService.saveLot(lot);
-
-        return images;
+        return s3Service.uploadFiles(
+                suitableImages, createFolder(lot.getId(), imageFiles.stream().findAny().get().getContentType()));
     }
 
     @Transactional
