@@ -60,6 +60,6 @@ public class Lot {
     private LocalDateTime endTime;
 
     public enum Status {
-        active, closed, sold
+       active, closed, sold
     }
 }

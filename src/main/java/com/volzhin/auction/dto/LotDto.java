@@ -30,7 +30,7 @@ public class LotDto {
     @Future(message = "End time должен быть в будущем")
     private LocalDateTime endTime;
     private Lot.Status status;
-    private long seller_id;
+    private long sellerId;
     @NotNull
-    private int category_id;
+    private int categoryId;
 }

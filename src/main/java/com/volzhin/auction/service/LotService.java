@@ -70,8 +70,8 @@ public class LotService {
                 .startTime(lotDto.getStartTime())
                 .endTime(lotDto.getEndTime())
                 .status(Lot.Status.active)
-                .category(categoryService.getCategoryById((lotDto.getCategory_id())))
-                .seller(userService.getUserById(lotDto.getSeller_id()))
+                .category(categoryService.getCategoryById((lotDto.getCategoryId())))
+                .seller(userService.getUserById(lotDto.getSellerId()))
                 .build();
     }
 }

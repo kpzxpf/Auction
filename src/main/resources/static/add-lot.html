@@ -18,42 +18,42 @@
 
 <div class="container mt-5">
     <h2 class="text-center">Добавить новый лот</h2>
-    <form id="add-lot-form" class="mt-4">
+    <form id="add-lot-form" class="mt-4" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="title" class="form-label">Заголовок</label>
-            <input type="text" class="form-control" id="title" required maxlength="200">
+            <input type="text" class="form-control" id="title" name="title" required maxlength="200">
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Описание</label>
-            <textarea class="form-control" id="description" rows="3" maxlength="200"></textarea>
+            <textarea class="form-control" id="description" name="description" rows="3" maxlength="200"></textarea>
         </div>
         <div class="mb-3">
             <label for="startingPrice" class="form-label">Начальная цена</label>
-            <input type="number" class="form-control" id="startingPrice" required min="0" step="0.01">
+            <input type="number" class="form-control" id="startingPrice" name="startingPrice" required min="0" step="0.01">
         </div>
         <div class="mb-3">
             <label for="startTime" class="form-label">Время начала</label>
-            <input type="datetime-local" class="form-control" id="startTime" required>
+            <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
         </div>
         <div class="mb-3">
             <label for="endTime" class="form-label">Время окончания</label>
-            <input type="datetime-local" class="form-control" id="endTime" required>
+            <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
         </div>
         <div class="mb-3">
             <label for="images" class="form-label">Изображения лота</label>
-            <input type="file" class="form-control" id="images" accept="image/*" multiple>
-            <!-- Контейнер предпросмотра -->
+            <input type="file" class="form-control" id="images" name="files" accept="image/*" multiple>
             <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
         </div>
         <div class="mb-3">
             <label for="status" class="form-label">Статус</label>
-            <select class="form-select" id="status" required>
+            <select class="form-select" id="status" name="status" required>
                 <option value="">Выберите статус</option>
-                <option value="ACTIVE">Активен</option>
-                <option value="INACTIVE">Неактивен</option>
+                <option value="active">Активен</option>
+                <option value="closed">Неактивен</option>
             </select>
         </div>
-        <input type="hidden" id="seller_id">
+        <input type="hidden" id="seller_id" name="sellerId">
+        <input type="hidden" id="category_id" name="categoryId">
         <div class="mb-3">
             <label class="form-label">Категория</label>
             <div class="input-group">
@@ -67,7 +67,7 @@
     </form>
 </div>
 
-<!-- Modal для выбора категории -->
+<!-- Модальное окно категорий -->
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -76,13 +76,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <ul class="list-group">
-                    <li class="list-group-item" data-category="electronics">Электроника</li>
-                    <li class="list-group-item" data-category="art">Искусство</li>
-                    <li class="list-group-item" data-category="antiques">Антиквариат</li>
-                    <li class="list-group-item" data-category="cars">Автомобили</li>
-                    <li class="list-group-item" data-category="real-estate">Недвижимость</li>
-                </ul>
+                <ul class="list-group" id="categoryList"></ul>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
