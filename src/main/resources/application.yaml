@@ -46,6 +46,7 @@ spring:
       accessKey: user
       secretKey: password
       bucketName: projectbucket
+      duration-url: 7
 
   image:
     max-width-horizontal: 1080

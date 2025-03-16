@@ -1,5 +1,6 @@
 package com.volzhin.auction.service;
 
+import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
@@ -32,6 +33,8 @@ public class LotService {
 
         lot = lotRepository.save(lot);
         List<Image> images = imageService.addImages(lot, files);
+        Lot finalLot = lot;
+        images.forEach(image -> image.setLot(finalLot));
         lot.setImages(images);
 
         return lotRepository.save(lot);

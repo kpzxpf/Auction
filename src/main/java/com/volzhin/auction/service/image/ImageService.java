@@ -1,11 +1,11 @@
 package com.volzhin.auction.service.image;
 
+import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.exception.FileException;
 import com.volzhin.auction.repository.ImageRepository;
-import com.volzhin.auction.repository.LotRepository;
-import com.volzhin.auction.service.LotService;
+import com.volzhin.auction.service.image.resize.CustomMultipartFile;
 import com.volzhin.auction.service.image.resize.ResizeService;
 import com.volzhin.auction.service.image.s3.S3Service;
 import jakarta.persistence.EntityNotFoundException;
@@ -27,22 +27,21 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final ResizeService resizeService;
 
-    @Transactional
-    public void addImage(Lot lot, MultipartFile imageFile) {
-        MultipartFile suitableImage = resizeFile(imageFile);
-        Image image = s3Service.uploadFile(
-                suitableImage, createFolder(lot.getId(), imageFile.getContentType()));
-
-        image.setLot(lot);
-        image = imageRepository.save(image);
-        lot.getImages().add(image);
-    }
 
     @Transactional
     public List<Image> addImages(Lot lot, List<MultipartFile> imageFiles) {
         List<MultipartFile> suitableImages = resizeFiles(imageFiles);
         return s3Service.uploadFiles(
                 suitableImages, createFolder(lot.getId(), imageFiles.stream().findAny().get().getContentType()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ImageDto> getImageUrls(long lotId) {
+        return imageRepository.findAllByLotId(lotId).stream()
+                .map(image -> new ImageDto(
+                        s3Service.generatePublicUrl(image.getKey())
+                ))
+                .toList();
     }
 
     @Transactional
@@ -53,15 +52,6 @@ public class ImageService {
         imageRepository.deleteById(imageId);
 
         return resource;
-    }
-
-    private MultipartFile resizeFile(MultipartFile file) {
-        try {
-            return resizeService.resizeImage(file);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new FileException("Failed to resize image: " + file.getOriginalFilename());
-        }
     }
 
     private List<MultipartFile> resizeFiles(List<MultipartFile> files) {
@@ -88,5 +78,28 @@ public class ImageService {
 
     private String createFolder(Long postId, String fileType) {
         return String.format("Post%s%s", postId, fileType.replaceAll("/.*$", ""));
+    }
+
+    private CustomMultipartFile convertInputStream(Image image, byte[] content) {
+        String filename = image.getName();
+        String contentType = determineContentType(filename);
+
+        return new CustomMultipartFile(
+                "file",
+                filename,
+                contentType,
+                content
+        );
+    }
+
+    private String determineContentType(String filename) {
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        return switch (extension) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "gif" -> "image/gif";
+            case "pdf" -> "application/pdf";
+            default -> "application/octet-stream";
+        };
     }
 }

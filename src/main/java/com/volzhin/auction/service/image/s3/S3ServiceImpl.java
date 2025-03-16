@@ -1,6 +1,8 @@
 package com.volzhin.auction.service.image.s3;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.volzhin.auction.entity.Image;
@@ -13,16 +15,32 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
+
     private final AmazonS3 s3Client;
 
     @Value("${spring.services.s3.bucketName}")
     private String bucketName;
+    @Value("${spring.services.s3.duration-url}")
+    private int durationUrl;
+
+
+    @Override
+    public String generatePublicUrl(String key) {
+        Date expiration = new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(durationUrl));
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, key)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+
+        return s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+    }
 
     @Override
     public Image uploadFile(MultipartFile file, String folder) {

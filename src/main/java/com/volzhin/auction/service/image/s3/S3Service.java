@@ -9,6 +9,7 @@ import java.util.List;
 
 @Service
 public interface S3Service {
+    String generatePublicUrl(String key);
 
     Image uploadFile(MultipartFile file, String folder);
 

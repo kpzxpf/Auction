@@ -61,6 +61,12 @@ async function loadAuctionLots() {
             return;
         }
 
+        // Загружаем изображения для каждого лота
+        for (const lot of lots) {
+            const images = await loadLotImages(lot.id);
+            lot.images = images; // Добавляем изображения в объект лота
+        }
+
         displayAuctionLots(lots);
         currentPage++;
     } catch (error) {
@@ -71,9 +77,18 @@ async function loadAuctionLots() {
     }
 }
 
+async function loadLotImages(lotId) {
+    try {
+        const response = await fetch(`http://localhost:8080/images/${lotId}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки изображений:', error);
+        return [];
+    }
+}
+
 function displayAuctionLots(lots) {
     const lotGrid = document.getElementById('lot-grid');
-
     lots.forEach(lot => {
         const lotElement = createLotElement(lot);
         lotGrid.appendChild(lotElement);

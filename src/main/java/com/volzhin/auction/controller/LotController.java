@@ -1,5 +1,6 @@
 package com.volzhin.auction.controller;
 
+import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Lot;
 import com.volzhin.auction.mapper.LotMapper;
@@ -33,6 +34,7 @@ public class LotController {
         Lot savedLot =  lotService.updateLot(lot);
         return lotMapper.toDto(savedLot);
     }
+
 
     @GetMapping("/{id}")
     public LotDto getLotById(@PathVariable Long id) {
