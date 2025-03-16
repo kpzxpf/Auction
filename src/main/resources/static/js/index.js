@@ -109,7 +109,7 @@ function createLotElement(lot) {
                 <h5 class="card-title">${lot.title}</h5>
                 <p class="card-text text-muted">${lot.description || ''}</p>
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge bg-primary">${lot.category?.name || 'Без категории'}</span>
+                    <span class="badge bg-primary">${lot.categoryName || 'Без категории'}</span>
                     <h5 class="text-success">${lot.currentPrice.toFixed(2)}₽</h5>
                 </div>
                 <a href="lot.html?id=${lot.id}" class="stretched-link"></a>

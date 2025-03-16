@@ -31,8 +31,8 @@ public class LotController {
 
     @PutMapping
     public LotDto updateLot(LotDto lot) {
-        Lot savedLot =  lotService.updateLot(lot);
-        return lotMapper.toDto(savedLot);
+        Lot updatedLot = lotService.updateLot(lot);
+        return lotMapper.toDto(updatedLot);
     }
 
 

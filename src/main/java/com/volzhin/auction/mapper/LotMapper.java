@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface LotMapper {
     @Mapping(source = "seller.id", target = "sellerId")
-    @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "category.name", target = "categoryName")
     LotDto toDto(Lot lot);
 
     List<LotDto> toDto(List<Lot> lots);

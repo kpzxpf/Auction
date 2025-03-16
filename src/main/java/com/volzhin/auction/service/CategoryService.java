@@ -17,11 +17,8 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Category getCategoryById(long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> {
-            log.error("Category with id {} not found", id);
-            return new EntityNotFoundException(String.format("Category with id %s not found", id));
-        });
+    public Category getCategoryByName(String name) {
+        return categoryRepository.findByName(name);
     }
 
     public List<Category> getAllCategories() {

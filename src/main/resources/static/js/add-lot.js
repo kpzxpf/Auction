@@ -12,13 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initCategoryModal();
     setupImagePreview();
-    setupFormSubmission();
+    setupFormSubmission(sellerId);
 });
 
 function initCategoryModal() {
     const modal = document.getElementById('categoryModal');
-    const selectedCategory = document.getElementById('selected-category');
-    const categoryIdInput = document.getElementById('category_id');
 
     modal.addEventListener('show.bs.modal', async () => {
         try {
@@ -44,8 +42,8 @@ function initCategoryModal() {
     modal.addEventListener('click', (event) => {
         const target = event.target;
         if (target.tagName === 'LI' && target.classList.contains('list-group-item')) {
-            selectedCategory.value = target.textContent;
-            categoryIdInput.value = target.dataset.categoryId;
+            document.getElementById('selected-category').value = target.textContent;
+            document.getElementById('category_id').value = target.dataset.categoryId;
             bootstrap.Modal.getInstance(modal).hide();
         }
     });
@@ -73,13 +71,14 @@ function setupImagePreview() {
     });
 }
 
-function setupFormSubmission() {
+function setupFormSubmission(sellerId) {
     const form = document.getElementById('add-lot-form');
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        if (!document.getElementById('category_id').value) {
+        const categoryName = document.getElementById('selected-category').value;
+        if (!categoryName) {
             alert('Пожалуйста, выберите категорию');
             return;
         }
@@ -92,6 +91,7 @@ function setupFormSubmission() {
         }
 
         const formData = new FormData(form);
+        formData.append('categoryName', categoryName);
 
         try {
             const response = await fetch('http://localhost:8080/lots', {
@@ -105,7 +105,7 @@ function setupFormSubmission() {
             }
 
             alert('Лот успешно создан!');
-            window.location.href = `profile.html?seller_id=${formData.get('sellerId')}`;
+            window.location.href = `profile.html`;
         } catch (error) {
             console.error('Ошибка:', error);
             alert(`Ошибка при создании лота: ${error.message}`);

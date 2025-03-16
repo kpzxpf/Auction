@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     await loadUserProfile();
-
     await loadUserLots();
 });
 
@@ -92,12 +91,31 @@ function displayUserLots(lots) {
         const lotElement = document.createElement("div");
         lotElement.className = "col-md-4 mb-4";
         lotElement.innerHTML = `
-            <div class="card">
-                <img src="${lot.imageUrl || 'images/default.jpg'}" class="card-img-top" alt="${lot.title}">
+            <div class="card h-100 shadow-sm">
+                <img src="${lot.images?.[0]?.url || 'images/default.jpg'}" 
+                     class="card-img-top" 
+                     alt="${lot.title}"
+                     style="height: 200px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title">${lot.title}</h5>
-                    <p class="card-text"><strong>Цена:</strong> ${lot.currentPrice}₽</p>
-                    <a href="auction.html?id=${lot.id}" class="btn btn-primary">Подробнее</a>
+                    <p class="card-text text-muted">${lot.description || ''}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary">${lot.categoryName|| 'Без категории'}</span>
+                        <h5 class="text-success">${lot.currentPrice.toFixed(2)}₽</h5>
+                    </div>
+                    <div class="mt-2">
+                        <a href="lot.html?id=${lot.id}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Подробнее
+                        </a>
+                        <a href="edit-lot.html?id=${lot.id}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Редактировать
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        Окончание: ${new Date(lot.endTime).toLocaleDateString()}
+                    </small>
                 </div>
             </div>
         `;

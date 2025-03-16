@@ -32,5 +32,5 @@ public class LotDto {
     private Lot.Status status;
     private long sellerId;
     @NotNull
-    private int categoryId;
+    private String categoryName;
 }

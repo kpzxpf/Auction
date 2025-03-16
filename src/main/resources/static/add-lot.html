@@ -53,7 +53,6 @@
             </select>
         </div>
         <input type="hidden" id="seller_id" name="sellerId">
-        <input type="hidden" id="category_id" name="categoryId">
         <div class="mb-3">
             <label class="form-label">Категория</label>
             <div class="input-group">
@@ -62,12 +61,12 @@
                     <i class="fas fa-list"></i>
                 </button>
             </div>
+            <input type="hidden" id="category_id" name="categoryId">
         </div>
         <button type="submit" class="btn btn-success w-100">Добавить лот</button>
     </form>
 </div>
 
-<!-- Модальное окно категорий -->
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

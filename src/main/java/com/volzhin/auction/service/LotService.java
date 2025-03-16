@@ -1,6 +1,5 @@
 package com.volzhin.auction.service;
 
-import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.Lot;
@@ -79,7 +78,7 @@ public class LotService {
                 .startTime(lotDto.getStartTime())
                 .endTime(lotDto.getEndTime())
                 .status(Lot.Status.active)
-                .category(categoryService.getCategoryById((lotDto.getCategoryId())))
+                .category(categoryService.getCategoryByName((lotDto.getCategoryName())))
                 .seller(userService.getUserById(lotDto.getSellerId()))
                 .build();
     }
