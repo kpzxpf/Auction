@@ -18,6 +18,12 @@ spring:
         order_inserts: true
         order_updates: true
 
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      cache-size: 30
+
   web:
     resources:
       static-locations: classpath:/static/

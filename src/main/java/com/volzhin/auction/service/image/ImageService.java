@@ -2,7 +2,7 @@ package com.volzhin.auction.service.image;
 
 import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.entity.Image;
-import com.volzhin.auction.entity.Lot;
+import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.exception.FileException;
 import com.volzhin.auction.repository.ImageRepository;
 import com.volzhin.auction.service.image.resize.CustomMultipartFile;
@@ -52,6 +52,12 @@ public class ImageService {
         imageRepository.deleteById(imageId);
 
         return resource;
+    }
+
+    public List<String> getImageUrlsByLotId(long lotId) {
+        return imageRepository.findAllByLotId(lotId).stream()
+                .map(image -> (s3Service.generatePublicUrl(image.getKey())))
+                .toList();
     }
 
     private List<MultipartFile> resizeFiles(List<MultipartFile> files) {

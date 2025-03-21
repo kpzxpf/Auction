@@ -2,7 +2,7 @@ package com.volzhin.auction.service;
 
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.Image;
-import com.volzhin.auction.entity.Lot;
+import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.repository.LotRepository;
 import com.volzhin.auction.service.image.ImageService;
 import com.volzhin.auction.service.user.UserService;
@@ -51,6 +51,11 @@ public class LotService {
                     log.error("Lot with id {} not found", id);
                    return new EntityNotFoundException(String.format("Lot with id %s not found", id));
                 });
+    }
+
+    @Transactional(readOnly = true)
+    public List<Lot> findActiveLotsSortedByEndTime(int cacheSize) {
+        return lotRepository.findActiveLotsSortedByEndTime(PageRequest.of(0, cacheSize));
     }
 
     @Transactional(readOnly = true)

@@ -1,6 +1,6 @@
 package com.volzhin.auction.dto;
 
-import com.volzhin.auction.entity.Lot;
+import com.volzhin.auction.entity.lot.Lot;
 import jakarta.validation.constraints.*;
 import lombok.*;
 

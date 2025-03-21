@@ -1,5 +1,7 @@
-package com.volzhin.auction.entity;
+package com.volzhin.auction.entity.lot;
 
+import com.volzhin.auction.entity.Category;
+import com.volzhin.auction.entity.Image;
 import com.volzhin.auction.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;

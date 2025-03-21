@@ -1,13 +1,11 @@
 package com.volzhin.auction.controller;
 
-import com.volzhin.auction.dto.ImageDto;
 import com.volzhin.auction.dto.LotDto;
-import com.volzhin.auction.entity.Lot;
+import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.LotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

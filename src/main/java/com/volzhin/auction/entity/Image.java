@@ -1,5 +1,6 @@
 package com.volzhin.auction.entity;
 
+import com.volzhin.auction.entity.lot.Lot;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
