@@ -33,7 +33,6 @@ public class LotController {
         return lotMapper.toDto(updatedLot);
     }
 
-
     @GetMapping("/{id}")
     public LotDto getLotById(@PathVariable Long id) {
         return lotMapper.toDto(lotService.findById(id));

@@ -24,6 +24,19 @@ spring:
       host: localhost
       cache-size: 30
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    topic:
+      new-post: posts
+      like-post: likes
+      post-views: post_views
+      comment-post: comments
+      heater-feed: heaters
+    consumer:
+      group-id:
+        post-group: post
+        heater-group: heater
+
   web:
     resources:
       static-locations: classpath:/static/

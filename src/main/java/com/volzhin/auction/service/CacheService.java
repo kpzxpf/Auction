@@ -32,13 +32,17 @@ public class CacheService {
         log.info("Cache initialized");
     }
 
+    public List<LotCache> getCacheLots() {
+        return (List<LotCache>) lotCacheRepository.findAll();
+    }
+
     private List<LotCache> convertLotsToLotCaches(List<Lot> lots) {
         return lots.stream().map(lot -> LotCache.builder()
-                .id(lot.getId())
-                .title(lot.getTitle())
-                .description(lot.getDescription())
-                .urlImages(imageService.getImageUrlsByLotId(lot.getId()))
-                .build())
+                        .id(lot.getId())
+                        .title(lot.getTitle())
+                        .description(lot.getDescription())
+                        .urlImages(imageService.getImageUrlsByLotId(lot.getId()))
+                        .build())
                 .toList();
     }
 }
