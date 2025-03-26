@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,4 +21,8 @@ public class LotCache implements Serializable {
     private String description;
     private List<String> urlImages;
     private LocalDateTime endTime;
+    private BigDecimal startingPrice;
+    private BigDecimal currentPrice;
+    private long sellerId;
+    private String categoryName;
 }

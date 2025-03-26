@@ -3,8 +3,8 @@ package com.volzhin.auction.service.cache;
 import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.entity.lot.LotCache;
 import com.volzhin.auction.repository.cache.LotCacheRepository;
-import com.volzhin.auction.service.LotService;
 import com.volzhin.auction.service.image.ImageService;
+import com.volzhin.auction.service.lot.LotQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class LotCacheService {
-    private final LotService lotService;
+    private final LotQueryService lotQueryService;
     private final LotCacheRepository lotCacheRepository;
     private final ImageService imageService;
 
@@ -26,12 +26,14 @@ public class LotCacheService {
     @Value("${spring.data.redis.lot-cache-entry-threshold-minutes}")
     private int lotCacheEntryThresholdMinutes;
 
-
     @Scheduled(cron = "0 */6 * * * *")
     public void fillCache() {
-        List<Lot> lots = lotService.findLotsEndingWithin(lotCacheEntryThresholdMinutes, cacheSize);
+        log.info("Fill cache");
 
+        List<Lot> lots = lotQueryService.findLotsEndingWithin(lotCacheEntryThresholdMinutes, cacheSize);
         lotCacheRepository.saveAll(convertLotsToLotCaches(lots));
+
+        log.info("Finish fill cache");
     }
 
     public void deleteLot(long id) {

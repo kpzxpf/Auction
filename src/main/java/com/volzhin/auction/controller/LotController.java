@@ -3,7 +3,8 @@ package com.volzhin.auction.controller;
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.mapper.LotMapper;
-import com.volzhin.auction.service.LotService;
+import com.volzhin.auction.service.lot.LotQueryService;
+import com.volzhin.auction.service.lot.LotService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LotController {
     private final LotService lotService;
+    private final LotQueryService lotQueryService;
     private final LotMapper lotMapper;
 
     @PostMapping
@@ -23,7 +25,6 @@ public class LotController {
             @Valid @ModelAttribute LotDto lot,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         Lot savedLot = lotService.createLot(lot, files);
-
         return lotMapper.toDto(savedLot);
     }
 
@@ -35,18 +36,18 @@ public class LotController {
 
     @GetMapping("/{id}")
     public LotDto getLotById(@PathVariable Long id) {
-        return lotMapper.toDto(lotService.findById(id));
+        return lotMapper.toDto(lotQueryService.findById(id));
     }
 
     @GetMapping
     public List<LotDto> getLots(@RequestParam(defaultValue = "0") int page,
-                                 @RequestParam(defaultValue = "9") int size) {
-        return lotMapper.toDto(lotService.getLots(page, size));
+                                @RequestParam(defaultValue = "9") int size) {
+        return lotMapper.toDto(lotQueryService.getLots(page, size));
     }
 
     @GetMapping("user/{userId}")
     public List<LotDto> getLotsByUserId(@PathVariable Long userId) {
-        return lotMapper.toDto(lotService.getLotsByUserId(userId));
+        return lotMapper.toDto(lotQueryService.getLotsByUserId(userId));
     }
 
     @DeleteMapping("/{id}")
