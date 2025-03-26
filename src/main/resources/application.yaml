@@ -23,18 +23,20 @@ spring:
       port: 6379
       host: localhost
       cache-size: 30
+      lot-cache-entry-threshold-minutes: 3
 
   kafka:
     bootstrap-servers: localhost:9092
     topic:
-      new-post: posts
-      like-post: likes
-      post-views: post_views
-      comment-post: comments
-      heater-feed: heaters
+      replicationFactor: 1
+      partitions: 1
+      names:
+        update-lot: updateLotTopic
+        new-bid: newBidTopic
+        delete-lot: deleteLotTopic
     consumer:
       group-id:
-        post-group: post
+        lot-group: lot
         heater-group: heater
 
   web:

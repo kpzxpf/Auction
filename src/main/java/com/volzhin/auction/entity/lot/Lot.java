@@ -48,7 +48,7 @@ public class Lot {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @OneToMany(mappedBy = "lot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "lot", cascade = CascadeType.ALL)
     private List<Image> images = new ArrayList<>();
 
     @CreationTimestamp

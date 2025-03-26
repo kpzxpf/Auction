@@ -1,7 +1,7 @@
 package com.volzhin.auction.controller;
 
 import com.volzhin.auction.entity.lot.LotCache;
-import com.volzhin.auction.service.CacheService;
+import com.volzhin.auction.service.cache.LotCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +13,10 @@ import java.util.List;
 @RequestMapping("/cache")
 @RequiredArgsConstructor
 public class CacheController {
-    private final CacheService cacheService;
+    private final LotCacheService lotCacheService;
 
     @GetMapping
     public List<LotCache> getLotCaches() {
-        return cacheService.getCacheLots();
+        return lotCacheService.getCacheLots();
     }
 }

@@ -1,4 +1,4 @@
-package com.volzhin.auction.repository;
+package com.volzhin.auction.repository.cache;
 
 import com.volzhin.auction.entity.lot.LotCache;
 import org.springframework.data.repository.CrudRepository;

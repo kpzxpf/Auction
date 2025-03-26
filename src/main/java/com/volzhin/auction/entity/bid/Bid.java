@@ -1,4 +1,4 @@
-package com.volzhin.auction.entity;
+package com.volzhin.auction.entity.bid;
 
 import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.entity.user.User;

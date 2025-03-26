@@ -28,7 +28,7 @@ public class LotController {
     }
 
     @PutMapping
-    public LotDto updateLot(LotDto lot) {
+    public LotDto updateLot(@RequestBody LotDto lot) {
         Lot updatedLot = lotService.updateLot(lot);
         return lotMapper.toDto(updatedLot);
     }
@@ -47,5 +47,10 @@ public class LotController {
     @GetMapping("user/{userId}")
     public List<LotDto> getLotsByUserId(@PathVariable Long userId) {
         return lotMapper.toDto(lotService.getLotsByUserId(userId));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteLotById(@PathVariable Long id) {
+        lotService.deleteLot(id);
     }
 }
