@@ -77,8 +77,8 @@ function setupFormSubmission(sellerId) {
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        const categoryName = document.getElementById('selected-category').value;
-        if (!categoryName) {
+        const categoryId = document.getElementById('category_id').value;
+        if (!categoryId) {
             alert('Пожалуйста, выберите категорию');
             return;
         }
@@ -91,7 +91,7 @@ function setupFormSubmission(sellerId) {
         }
 
         const formData = new FormData(form);
-        formData.append('categoryName', categoryName);
+        formData.append('categoryId', categoryId); // Отправляем categoryId вместо categoryName
 
         try {
             const response = await fetch('http://localhost:8080/lots', {

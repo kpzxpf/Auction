@@ -24,7 +24,7 @@ function displayAuctionDetails(lot) {
     const auctionDetail = document.getElementById("lot");
     auctionDetail.innerHTML = `
         <div class="card">
-            <img src="${lot.imageUrl || 'images/default.jpg'}" 
+            <img src="${lot.imageUrl || 'images/banner.jpg'}" 
                  class="card-img-top" 
                  alt="${lot.title}"
                  style="max-height: 500px; object-fit: cover">
@@ -69,7 +69,7 @@ function setupBidForm(lotId) {
 
         const bidAmount = document.getElementById("bid-amount").value;
         try {
-            const response = await fetch(`http://localhost:8080/bids`, {
+            const response = await fetch(`http://localhost:8080/bid`, { // Обновлено на /bid
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -82,6 +82,14 @@ function setupBidForm(lotId) {
             loadAuctionDetails(lotId);
         } catch (error) {
             console.error(error);
+            alert("Ошибка при подаче ставки");
         }
     });
+}
+
+function showError(message) {
+    const auctionDetail = document.getElementById("lot");
+    auctionDetail.innerHTML = `
+        <div class="alert alert-danger">${message}</div>
+    `;
 }

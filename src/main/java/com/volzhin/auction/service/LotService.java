@@ -1,4 +1,4 @@
-package com.volzhin.auction.service.lot;
+package com.volzhin.auction.service;
 
 import com.volzhin.auction.dto.LotDto;
 import com.volzhin.auction.dto.event.DeleteLotEvent;
@@ -8,16 +8,18 @@ import com.volzhin.auction.entity.lot.LotCache;
 import com.volzhin.auction.producer.DeleteLotProducer;
 import com.volzhin.auction.producer.UpdateLotProducer;
 import com.volzhin.auction.repository.LotRepository;
-import com.volzhin.auction.service.CategoryService;
 import com.volzhin.auction.service.image.ImageService;
 import com.volzhin.auction.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 public class LotService {
-    private final LotQueryService lotQueryService;
     private final LotRepository lotRepository;
     private final CategoryService categoryService;
     private final UserService userService;
@@ -49,11 +50,10 @@ public class LotService {
 
     @Transactional
     public Lot updateLot(LotDto lotDto) {
-        if (!lotQueryService.existsById(lotDto.getId())) {
+        if (!existsById(lotDto.getId())) {
             log.error("Lot with id {} does not exist", lotDto.getId());
             throw new EntityNotFoundException(String.format("Lot with id %s not found", lotDto.getId()));
         }
-
         Lot lot = lotRepository.save(lotDtoToLot(lotDto));
 
         if (lot.getStatus() == Lot.Status.active) {
@@ -63,6 +63,43 @@ public class LotService {
         }
 
         return lot;
+    }
+
+    @Transactional(readOnly = true)
+    public Lot findById(long id) {
+        return lotRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Lot with id " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Lot> findLotsEndingWithin(int minutes, int size) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime target = now.minusMinutes(minutes);
+
+        return lotRepository.findLotsEndingWithin(now, target, PageRequest.of(0, size));
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsById(long id) {
+        return lotRepository.existsById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Lot> getLots(int page, int size, String categoryName) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (categoryName != null) {
+            return lotRepository.findByCategoryName(categoryName, pageable);
+        } else {
+            return lotRepository.findAll(pageable).getContent();
+        }
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public List<Lot> getLotsByUserId(long userId) {
+        return lotRepository.findLotsBySellerId(userId);
     }
 
     @Transactional

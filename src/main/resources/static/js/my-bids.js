@@ -10,7 +10,7 @@ async function loadUserBids() {
     }
 
     try {
-        const response = await fetch("http://localhost:8080/bids/user", {
+        const response = await fetch("http://localhost:8080/bid/user", { // Обновлено на /bid/user
             headers: { "Authorization": `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Ошибка загрузки ставок");
@@ -19,6 +19,7 @@ async function loadUserBids() {
         displayUserBids(bids);
     } catch (error) {
         console.error(error);
+        alert("Ошибка при загрузке ставок");
     }
 }
 

@@ -92,7 +92,7 @@ function displayUserLots(lots) {
         lotElement.className = "col-md-4 mb-4";
         lotElement.innerHTML = `
             <div class="card h-100 shadow-sm">
-                <img src="${lot.images?.[0]?.url || 'images/default.jpg'}" 
+                <img src="${lot.images?.[0]?.url || 'images/banner.jpg'}" 
                      class="card-img-top" 
                      alt="${lot.title}"
                      style="height: 200px; object-fit: cover;">
@@ -100,7 +100,7 @@ function displayUserLots(lots) {
                     <h5 class="card-title">${lot.title}</h5>
                     <p class="card-text text-muted">${lot.description || ''}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-primary">${lot.categoryName|| 'Без категории'}</span>
+                        <span class="badge bg-primary">${lot.categoryName || 'Без категории'}</span>
                         <h5 class="text-success">${lot.currentPrice.toFixed(2)}₽</h5>
                     </div>
                     <div class="mt-2">

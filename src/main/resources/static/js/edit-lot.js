@@ -53,6 +53,7 @@ function setupFormSubmission(lotId) {
         }
 
         const formData = {
+            id: lotId, // Добавляем ID лота в тело запроса
             title: document.getElementById("title").value,
             description: document.getElementById("description").value,
             startingPrice: document.getElementById("startingPrice").value,

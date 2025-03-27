@@ -14,14 +14,12 @@ import java.util.List;
 
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Long> {
-    @QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "12"))
-    @Query("SELECT l FROM Lot l")
-    List<Lot> findAllLots(Pageable pageable);
-
     List<Lot> findLotsBySellerId(Long userId);
 
     @Query("SELECT l FROM Lot l WHERE l.status = 'active' AND l.endTime BETWEEN :now AND :targetTime")
     List<Lot> findLotsEndingWithin(@Param("now") LocalDateTime now,
                                    @Param("targetTime") LocalDateTime targetTime,
                                    Pageable pageable);
+
+    List<Lot> findByCategoryName(String categoryName, Pageable pageable);
 }

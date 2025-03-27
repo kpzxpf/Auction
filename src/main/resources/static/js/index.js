@@ -1,6 +1,7 @@
 let currentPage = 0;
 let isLoading = false;
 let selectedCategoryId = 'all';
+let selectedCategoryName = 'all';
 let hasMore = true;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,7 +32,7 @@ function populateCategories(categories) {
     categories.forEach(category => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <a class="dropdown-item" href="#" data-category-id="${category.id}">
+            <a class="dropdown-item" href="#" data-category-id="${category.id}" data-category-name="${category.name}">
                 ${category.name}
             </a>
         `;
@@ -45,11 +46,11 @@ async function loadAuctionLots() {
     showLoading();
 
     try {
-        const url = new URL('http://localhost:8080/lots');
+        const url = new URL('http://localhost:8080/feed');
         url.searchParams.append('page', currentPage);
         url.searchParams.append('size', 9);
         if (selectedCategoryId !== 'all') {
-            url.searchParams.append('categoryId', selectedCategoryId);
+            url.searchParams.append('categoryName', selectedCategoryName);
         }
 
         const response = await fetch(url);
@@ -61,10 +62,9 @@ async function loadAuctionLots() {
             return;
         }
 
-        // Загружаем изображения для каждого лота
         for (const lot of lots) {
             const images = await loadLotImages(lot.id);
-            lot.images = images; // Добавляем изображения в объект лота
+            lot.images = images;
         }
 
         displayAuctionLots(lots);
@@ -101,7 +101,7 @@ function createLotElement(lot) {
 
     col.innerHTML = `
         <div class="card h-100 shadow-sm">
-            <img src="${lot.images?.[0]?.url || 'images/default.jpg'}" 
+            <img src="${lot.images?.[0]?.url || 'images/banner.jpg'}" 
                  class="card-img-top" 
                  alt="${lot.title}"
                  style="height: 200px; object-fit: cover;">
@@ -128,15 +128,14 @@ function handleCategorySelect(event) {
     const categoryItem = event.target.closest('[data-category-id]');
     if (!categoryItem) return;
 
-    const categoryId = categoryItem.dataset.categoryId;
-    const categoryName = categoryItem.textContent.trim();
+    selectedCategoryId = categoryItem.dataset.categoryId;
+    selectedCategoryName = categoryItem.dataset.categoryName || categoryItem.textContent.trim();
 
-    selectedCategoryId = categoryId;
     currentPage = 0;
     hasMore = true;
 
     document.getElementById('lot-grid').innerHTML = '';
-    document.getElementById('categoryDropdown').textContent = categoryName;
+    document.getElementById('categoryDropdown').textContent = selectedCategoryName;
 
     loadAuctionLots();
 }
