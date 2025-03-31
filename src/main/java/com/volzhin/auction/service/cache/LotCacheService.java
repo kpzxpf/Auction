@@ -5,6 +5,7 @@ import com.volzhin.auction.entity.lot.LotCache;
 import com.volzhin.auction.repository.cache.LotCacheRepository;
 import com.volzhin.auction.service.image.ImageService;
 import com.volzhin.auction.service.LotService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,11 @@ public class LotCacheService {
     private int cacheSize;
     @Value("${spring.data.redis.lot-cache-entry-threshold-minutes}")
     private int lotCacheEntryThresholdMinutes;
+
+    @PostConstruct
+    public void init() {
+        fillCache();
+    }
 
     @Scheduled(cron = "0 */6 * * * *")
     public void fillCache() {

@@ -21,7 +21,7 @@ public class FeedService {
         List<LotCache> cachedLots = getCacheLots(categoryName);
         List<LotDto> lotsFromCache = lotMapper.toDtos(cachedLots);
 
-        int totalRequired = page == 0 ? 1 : page * size;
+        int totalRequired = (page == 0 ? 1 : page) * size;
         int cachedCount = lotsFromCache.size();
 
         if (cachedCount >= totalRequired) {

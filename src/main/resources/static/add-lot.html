@@ -3,72 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Добавить лот | Аукцион.ру</title>
+    <title>Аукцион.ру — Создать лот</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .img-thumbnail {
+            transition: transform 0.2s;
+        }
+        .img-thumbnail:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
+<!-- Навигационная панель -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="index.html"><i class="fas fa-gavel"></i> Аукцион.ру</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="my-bids.html">Мои ставки</a></li>
+                <li class="nav-item"><a class="nav-link" id="profileLink" href="profile.html" style="display: none;"><i class="fas fa-user"></i> Профиль</a></li>
+                <li class="nav-item"><a class="nav-link" id="loginLink" href="login.html">Вход</a></li>
+                <li class="nav-item"><a class="nav-link" id="registerLink" href="register.html">Регистрация</a></li>
+                <li class="nav-item"><button id="logoutButton" class="btn btn-danger btn-sm" style="display: none;">Выйти</button></li>
+            </ul>
+        </div>
     </div>
 </nav>
 
+<!-- Основной контент -->
 <div class="container mt-5">
-    <h2 class="text-center">Добавить новый лот</h2>
-    <form id="add-lot-form" class="mt-4" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="title" class="form-label">Заголовок</label>
-            <input type="text" class="form-control" id="title" name="title" required maxlength="200">
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Описание</label>
-            <textarea class="form-control" id="description" name="description" rows="3" maxlength="200"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="startingPrice" class="form-label">Начальная цена</label>
-            <input type="number" class="form-control" id="startingPrice" name="startingPrice" required min="0" step="0.01">
-        </div>
-        <div class="mb-3">
-            <label for="startTime" class="form-label">Время начала</label>
-            <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
-        </div>
-        <div class="mb-3">
-            <label for="endTime" class="form-label">Время окончания</label>
-            <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
-        </div>
-        <div class="mb-3">
-            <label for="images" class="form-label">Изображения лота</label>
-            <input type="file" class="form-control" id="images" name="files" accept="image/*" multiple>
-            <div id="imagePreview" class="d-flex flex-wrap mt-2"></div>
-        </div>
-        <div class="mb-3">
-            <label for="status" class="form-label">Статус</label>
-            <select class="form-select" id="status" name="status" required>
-                <option value="">Выберите статус</option>
-                <option value="active">Активен</option>
-                <option value="closed">Неактивен</option>
-            </select>
-        </div>
-        <input type="hidden" id="seller_id" name="sellerId">
-        <div class="mb-3">
-            <label class="form-label">Категория</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="selected-category" readonly placeholder="Выберите категорию">
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
-                    <i class="fas fa-list"></i>
-                </button>
+    <div class="form-container">
+        <h2 class="mb-4">Создать новый лот</h2>
+        <form id="add-lot-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="title" class="form-label">Название лота <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="title" name="title" required maxlength="200">
             </div>
-            <input type="hidden" id="category_id" name="categoryId">
-        </div>
-        <button type="submit" class="btn btn-success w-100">Добавить лот</button>
-    </form>
+            <div class="mb-3">
+                <label for="description" class="form-label">Описание</label>
+                <textarea class="form-control" id="description" name="description" rows="3" maxlength="200"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="startingPrice" class="form-label">Начальная цена (₽) <span class="text-danger">*</span></label>
+                <input type="number" step="0.01" min="0.01" class="form-control" id="startingPrice" name="startingPrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="startTime" class="form-label">Время начала <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
+            </div>
+            <div class="mb-3">
+                <label for="endTime" class="form-label">Время окончания <span class="text-danger">*</span></label>
+                <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Категория <span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <!-- Поле для передачи имени категории -->
+                    <input type="text" class="form-control" id="selected-category" name="categoryName" readonly placeholder="Выберите категорию">
+                    <!-- Скрытое поле для id (если нужно, но сейчас не используется для отправки) -->
+                    <input type="hidden" id="category_id">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="images" class="form-label">Изображения (до 5)</label>
+                <input type="file" class="form-control" id="images" name="files" multiple accept="image/*" onchange="restrictFileCount(this, 5)">
+                <div id="imagePreview" class="mt-2"></div>
+            </div>
+            <input type="hidden" id="seller_id" name="sellerId">
+            <button type="submit" class="btn btn-primary">Создать лот</button>
+        </form>
+    </div>
 </div>
 
+<!-- Модальное окно для выбора категории -->
 <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="categoryModalLabel">Выберите категорию</h5>
@@ -77,17 +103,186 @@
             <div class="modal-body">
                 <ul class="list-group" id="categoryList"></ul>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-            </div>
         </div>
     </div>
 </div>
 
+<!-- Футер -->
 <footer class="bg-dark text-light text-center py-3 mt-5">
     <p>© 2025 Аукцион.ру. Все права защищены.</p>
 </footer>
 
-<script src="js/add-lot.js"></script>
+<!-- Подключение Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript код -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sellerId = urlParams.get('seller_id');
+
+        if (!sellerId) {
+            alert('Ошибка авторизации! Укажите seller_id.');
+            window.location.href = 'profile.html';
+            return;
+        }
+
+        document.getElementById('seller_id').value = sellerId;
+
+        initCategoryModal();
+        setupImagePreview();
+        setupFormSubmission(sellerId);
+        updateNavigation();
+    });
+
+    function initCategoryModal() {
+        const modal = document.getElementById('categoryModal');
+
+        modal.addEventListener('show.bs.modal', async () => {
+            try {
+                const response = await fetch('http://localhost:8080/categories');
+                if (!response.ok) throw new Error(`HTTP ошибка: ${response.status}`);
+                const categories = await response.json();
+
+                const categoryList = document.getElementById('categoryList');
+                categoryList.innerHTML = '';
+
+                categories.forEach(category => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action';
+                    li.textContent = category.name;
+                    li.dataset.categoryId = category.id;
+                    categoryList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки категорий:', error);
+                alert('Не удалось загрузить категории. Попробуйте позже.');
+            }
+        });
+
+        modal.addEventListener('click', (event) => {
+            const target = event.target;
+            if (target.tagName === 'LI' && target.classList.contains('list-group-item')) {
+                // Устанавливаем выбранное значение как имя категории
+                document.getElementById('selected-category').value = target.textContent;
+                // Скрытое поле category_id можно оставить для справки, если потребуется
+                document.getElementById('category_id').value = target.dataset.categoryId;
+                bootstrap.Modal.getInstance(modal).hide();
+            }
+        });
+    }
+
+    function setupImagePreview() {
+        const imageInput = document.getElementById('images');
+        const previewContainer = document.getElementById('imagePreview');
+
+        imageInput.addEventListener('change', function() {
+            previewContainer.innerHTML = '';
+            Array.from(this.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'img-thumbnail m-1';
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    }
+
+    function restrictFileCount(input, max) {
+        if (input.files.length > max) {
+            alert(`Максимум ${max} изображений!`);
+            input.value = '';
+            document.getElementById('imagePreview').innerHTML = '';
+        }
+    }
+
+    function setupFormSubmission(sellerId) {
+        const form = document.getElementById('add-lot-form');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Получаем имя категории из поля с id 'selected-category'
+            const categoryName = document.getElementById('selected-category').value;
+            if (!categoryName) {
+                alert('Пожалуйста, выберите категорию');
+                return;
+            }
+
+            const startTime = new Date(document.getElementById('startTime').value);
+            const endTime = new Date(document.getElementById('endTime').value);
+            const now = new Date();
+
+            if (!startTime || !endTime) {
+                alert('Укажите корректные даты начала и окончания');
+                return;
+            }
+            if (startTime < now) {
+                alert('Время начала не может быть в прошлом');
+                return;
+            }
+            if (startTime >= endTime) {
+                alert('Время окончания должно быть позже времени начала');
+                return;
+            }
+
+            // Формируем FormData и устанавливаем значение categoryName
+            const formData = new FormData(form);
+            formData.set('categoryName', categoryName);
+
+            try {
+                const response = await fetch('http://localhost:8080/lots', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Ошибка сервера: ${response.status}`);
+                }
+
+                alert('Лот успешно создан!');
+                window.location.href = 'profile.html';
+            } catch (error) {
+                console.error('Ошибка при создании лота:', error);
+                alert(`Ошибка при создании лота: ${error.message}`);
+            }
+        });
+    }
+
+    function updateNavigation() {
+        const token = localStorage.getItem('jwtToken');
+        const elements = {
+            profileLink: document.getElementById('profileLink'),
+            logoutButton: document.getElementById('logoutButton'),
+            loginLink: document.getElementById('loginLink'),
+            registerLink: document.getElementById('registerLink')
+        };
+
+        if (token) {
+            elements.profileLink.style.display = 'block';
+            elements.logoutButton.style.display = 'block';
+            elements.loginLink.style.display = 'none';
+            elements.registerLink.style.display = 'none';
+        } else {
+            elements.profileLink.style.display = 'none';
+            elements.logoutButton.style.display = 'none';
+            elements.loginLink.style.display = 'block';
+            elements.registerLink.style.display = 'block';
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            localStorage.removeItem('jwtToken');
+            updateNavigation();
+            window.location.href = 'login.html';
+        });
+    }
+</script>
 </body>
 </html>

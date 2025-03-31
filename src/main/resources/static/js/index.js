@@ -3,32 +3,29 @@ let isLoading = false;
 let selectedCategoryId = 'all';
 let selectedCategoryName = 'all';
 let hasMore = true;
+let categories = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadCategories();
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadCategories();
     setupEventListeners();
     loadAuctionLots();
     updateNavigation();
 });
 
-function setupEventListeners() {
-    window.addEventListener('scroll', handleScroll);
-    document.getElementById('logoutButton').addEventListener('click', handleLogout);
-    document.getElementById('categoryList').addEventListener('click', handleCategorySelect);
-}
-
 async function loadCategories() {
     try {
         const response = await fetch('http://localhost:8080/categories');
-        const categories = await response.json();
+        categories = await response.json();
         populateCategories(categories);
     } catch (error) {
-        console.error('Ошибка загрузки категорий:', error);
+        console.error(' Ошибка загрузки категорий:', error);
     }
 }
 
+// Заполнение выпадающего списка категорий
 function populateCategories(categories) {
     const categoryList = document.getElementById('categoryList');
+    categoryList.innerHTML = '<li><a class="dropdown-item" href="#" data-category-id="all">Все категории</a></li>';
     categories.forEach(category => {
         const li = document.createElement('li');
         li.innerHTML = `
@@ -40,6 +37,7 @@ function populateCategories(categories) {
     });
 }
 
+// Загрузка лотов с сервера
 async function loadAuctionLots() {
     if (isLoading || !hasMore) return;
     isLoading = true;
@@ -52,7 +50,6 @@ async function loadAuctionLots() {
         if (selectedCategoryId !== 'all') {
             url.searchParams.append('categoryName', selectedCategoryName);
         }
-
         const response = await fetch(url);
         const lots = await response.json();
 
@@ -62,6 +59,7 @@ async function loadAuctionLots() {
             return;
         }
 
+        // Загружаем изображения для каждого лота
         for (const lot of lots) {
             const images = await loadLotImages(lot.id);
             lot.images = images;
@@ -77,6 +75,7 @@ async function loadAuctionLots() {
     }
 }
 
+// Загрузка изображений для лота
 async function loadLotImages(lotId) {
     try {
         const response = await fetch(`http://localhost:8080/images/${lotId}`);
@@ -87,6 +86,7 @@ async function loadLotImages(lotId) {
     }
 }
 
+// Отображение лотов в сетке
 function displayAuctionLots(lots) {
     const lotGrid = document.getElementById('lot-grid');
     lots.forEach(lot => {
@@ -95,35 +95,46 @@ function displayAuctionLots(lots) {
     });
 }
 
+// Создание HTML-элемента для лота
 function createLotElement(lot) {
+    // Создаем контейнер для элемента
     const col = document.createElement('div');
     col.className = 'col';
 
+    // Проверяем currentPrice на null и тип данных, задаем значение по умолчанию
+    const price = (lot.currentPrice != null && typeof lot.currentPrice === 'number')
+        ? lot.currentPrice.toFixed(2)
+        : '0.00';
+
+    // Заполняем HTML содержимое элемента
     col.innerHTML = `
         <div class="card h-100 shadow-sm">
             <img src="${lot.images?.[0]?.url || 'images/banner.jpg'}" 
                  class="card-img-top" 
-                 alt="${lot.title}"
+                 alt="${lot.title || 'Без названия'}"
                  style="height: 200px; object-fit: cover;">
             <div class="card-body">
-                <h5 class="card-title">${lot.title}</h5>
+                <h5 class="card-title">${lot.title || 'Без названия'}</h5>
                 <p class="card-text text-muted">${lot.description || ''}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="badge bg-primary">${lot.categoryName || 'Без категории'}</span>
-                    <h5 class="text-success">${lot.currentPrice.toFixed(2)}₽</h5>
+                    <h5 class="text-success">${price}₽</h5>
                 </div>
                 <a href="lot.html?id=${lot.id}" class="stretched-link"></a>
             </div>
             <div class="card-footer bg-transparent">
                 <small class="text-muted">
-                    Окончание: ${new Date(lot.endTime).toLocaleDateString()}
+                    Окончание: ${lot.endTime ? new Date(lot.endTime).toLocaleDateString() : 'Не указано'}
                 </small>
             </div>
         </div>
     `;
+
+    // Возвращаем готовый элемент
     return col;
 }
 
+// Обработка выбора категории
 function handleCategorySelect(event) {
     const categoryItem = event.target.closest('[data-category-id]');
     if (!categoryItem) return;
@@ -140,6 +151,7 @@ function handleCategorySelect(event) {
     loadAuctionLots();
 }
 
+// Обработка прокрутки для бесконечной загрузки
 function handleScroll() {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
     if (scrollTop + clientHeight >= scrollHeight - 100) {
@@ -147,6 +159,7 @@ function handleScroll() {
     }
 }
 
+// Обновление навигации в зависимости от авторизации
 function updateNavigation() {
     const token = localStorage.getItem('jwtToken');
     const elements = {
@@ -169,20 +182,24 @@ function updateNavigation() {
     }
 }
 
+// Обработка выхода из системы
 function handleLogout() {
     localStorage.removeItem('jwtToken');
     updateNavigation();
     window.location.reload();
 }
 
+// Показать индикатор загрузки
 function showLoading() {
     document.getElementById('loading').style.display = 'block';
 }
 
+// Скрыть индикатор загрузки
 function hideLoading() {
     document.getElementById('loading').style.display = 'none';
 }
 
+// Показать сообщение об отсутствии лотов
 function showNoLotsMessage() {
     const lotGrid = document.getElementById('lot-grid');
     lotGrid.innerHTML = `
@@ -190,4 +207,11 @@ function showNoLotsMessage() {
             <h4 class="text-muted">Нет доступных лотов в выбранной категории</h4>
         </div>
     `;
+}
+
+// Настройка обработчиков событий
+function setupEventListeners() {
+    window.addEventListener('scroll', handleScroll);
+    document.getElementById('logoutButton').addEventListener('click', handleLogout);
+    document.getElementById('categoryList').addEventListener('click', handleCategorySelect);
 }
