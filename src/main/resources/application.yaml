@@ -49,7 +49,10 @@ spring:
 
   jwt:
     secret: "V+X1dN5RxYQkPKF3UcC4d3+3fXwn1wFfJ+qg6Y7KzMo="
-    expiration: 86400000
+    access:
+      token-expiration: 900000  # 15 минут
+    refresh:
+      token-expiration: 2592000000  # 30 дней
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

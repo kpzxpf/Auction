@@ -32,10 +32,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.0.2")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.kafka:spring-kafka:3.2.3")
-
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
 
     /**
      * Database
@@ -59,12 +58,8 @@ dependencies {
     /**
      * Spring Security & JWT
      */
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("io.jsonwebtoken:jjwt-api:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.6")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-
+    implementation("org.springframework.security:spring-security-crypto:6.4.4")
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
 
     /**
      * Test containers

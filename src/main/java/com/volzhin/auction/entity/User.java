@@ -1,4 +1,4 @@
-package com.volzhin.auction.entity.user;
+package com.volzhin.auction.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,7 +30,7 @@ public class User {
     private String passwordHash;
 
     @Column(name = "balance", nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;
+    private BigDecimal balance;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)

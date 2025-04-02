@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
 public class BidCacheService {
     private final BidCacheRepository bidCacheRepository;
 
-    public boolean existsBidById(Long id) {
-        return bidCacheRepository.existsById(id);
-    }
-
     public void saveBid(BidCache newBid) {
         BidCache existingBid = bidCacheRepository.findByLotId(newBid.getLotId());
 

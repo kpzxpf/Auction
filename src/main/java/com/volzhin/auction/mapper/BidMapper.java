@@ -13,14 +13,7 @@ import java.util.List;
 public interface BidMapper {
     BidDto toDto(Bid bid);
 
-    Bid toEntity(BidDto bidDto);
-
-    @Mapping(target = "lotId", source = "lotId")
-    @Mapping(target = "userId", source = "userId")
-    @Mapping(target = "amount", source = "amount")
     BidCache toCache(BidDto bidDto);
 
     List<BidDto> toDto(List<Bid> bids);
-
-    List<Bid> toEntity(List<BidDto> bidDtos);
 }

@@ -1,6 +1,6 @@
 package com.volzhin.auction.dto;
 
-import com.volzhin.auction.entity.user.User;
+import com.volzhin.auction.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

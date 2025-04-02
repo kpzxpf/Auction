@@ -2,7 +2,7 @@ package com.volzhin.auction.entity.lot;
 
 import com.volzhin.auction.entity.Category;
 import com.volzhin.auction.entity.Image;
-import com.volzhin.auction.entity.user.User;
+import com.volzhin.auction.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -49,7 +49,7 @@ public class Lot {
     private Status status;
 
     @OneToMany(mappedBy = "lot", cascade = CascadeType.ALL)
-    private List<Image> images = new ArrayList<>();
+    private List<Image> images;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

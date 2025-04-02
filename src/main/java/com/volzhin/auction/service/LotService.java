@@ -9,7 +9,6 @@ import com.volzhin.auction.producer.DeleteLotProducer;
 import com.volzhin.auction.producer.UpdateLotProducer;
 import com.volzhin.auction.repository.LotRepository;
 import com.volzhin.auction.service.image.ImageService;
-import com.volzhin.auction.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,8 +94,6 @@ public class LotService {
         }
     }
 
-
-
     @Transactional(readOnly = true)
     public List<Lot> getLotsByUserId(long userId) {
         return lotRepository.findLotsBySellerId(userId);
@@ -106,6 +103,11 @@ public class LotService {
     public void deleteLot(long id) {
         lotRepository.deleteById(id);
         deleteLotFromCache(id);
+    }
+
+    @Transactional
+    public void save(Lot lot) {
+        lotRepository.save(lot);
     }
 
     private void updateCacheLot(Lot lot) {

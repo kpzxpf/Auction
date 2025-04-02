@@ -1,7 +1,7 @@
 package com.volzhin.auction.mapper;
 
 import com.volzhin.auction.dto.UserDto;
-import com.volzhin.auction.entity.user.User;
+import com.volzhin.auction.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
