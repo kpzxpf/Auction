@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +19,5 @@ public class BidDto {
     @NotNull
     @Positive
     private BigDecimal amount;
+    private LocalDateTime bidTime;
 }

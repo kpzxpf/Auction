@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,4 +34,5 @@ public class LotDto {
     private long sellerId;
     @NotNull
     private String categoryName;
+    private List<String> imageUrls;
 }

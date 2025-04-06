@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('register-form');
+    if (!registerForm) return;
+
     registerForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         const registerButton = document.getElementById('register-button');
@@ -24,9 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ username, email, password })
             });
 
-            if (!response.ok) throw new Error('Ошибка регистрации');
-            const user = await response.json();
-            localStorage.setItem('userId', user.id);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Ошибка регистрации');
+            }
+
+            const userId = await response.json();
+            console.log('Полученный userId:', userId);
+            if (!userId) throw new Error('ID пользователя не получен от сервера');
+            localStorage.setItem('userId', userId);
+            console.log('Сохранённый userId:', localStorage.getItem('userId'));
             document.getElementById('register-message').innerHTML =
                 '<div class="alert alert-success">Регистрация успешна! Перенаправление...</div>';
             setTimeout(() => window.location.href = 'index.html', 2000);

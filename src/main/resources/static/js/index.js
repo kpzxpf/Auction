@@ -70,7 +70,7 @@ function displayAuctionLots(lots) {
         col.className = 'col';
         col.innerHTML = `
             <div class="card h-100 shadow-sm">
-                <img src="${lot.images?.[0]?.url || 'images/banner.jpg'}" class="card-img-top" alt="${lot.title}" style="height: 200px; object-fit: cover;">
+                <img src="${lot.imageUrls?.[0] || 'images/banner.jpg'}" class="card-img-top" alt="${lot.title}" style="height: 200px; object-fit: cover;">
                 <div class="card-body">
                     <h5 class="card-title">${lot.title}</h5>
                     <p class="card-text text-muted">${lot.description || ''}</p>

@@ -1,13 +1,14 @@
 package com.volzhin.auction.service;
 
 import com.volzhin.auction.dto.LotDto;
+import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.entity.lot.LotCache;
 import com.volzhin.auction.mapper.LotMapper;
 import com.volzhin.auction.service.cache.LotCacheService;
+import com.volzhin.auction.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,37 +17,44 @@ public class FeedService {
     private final LotCacheService lotCacheService;
     private final LotService lotService;
     private final LotMapper lotMapper;
+    private final ImageService imageService;
 
     public List<LotDto> getLotFeed(int page, int size, String categoryName) {
-        List<LotCache> cachedLots = getCacheLots(categoryName);
+        int startIndex = page * size;
+        int endIndex = startIndex + size;
+
+        List<LotCache> cachedLots = retrieveCachedLots(categoryName);
         List<LotDto> lotsFromCache = lotMapper.toDtos(cachedLots);
+        int cachedLotCount = lotsFromCache.size();
 
-        int totalRequired = (page == 0 ? 1 : page) * size;
-        int cachedCount = lotsFromCache.size();
+        List<LotDto> lotsToReturn = getLotsToReturn(startIndex, endIndex, cachedLotCount,
+                lotsFromCache, page, size, categoryName);
 
-        if (cachedCount >= totalRequired) {
-            return lotsFromCache.subList(0, totalRequired);
+        enrichWithImageUrls(lotsToReturn);
+
+        return lotsToReturn;
+    }
+
+    private List<LotCache> retrieveCachedLots(String categoryName) {
+        return categoryName == null
+                ? lotCacheService.getCacheLots()
+                : lotCacheService.getCacheLotsByCategoryName(categoryName);
+    }
+
+    private List<LotDto> getLotsToReturn(int startIndex, int endIndex, int cachedLotCount,
+                                         List<LotDto> lotsFromCache, int page, int size, String categoryName) {
+        if (cachedLotCount >= endIndex) {
+            return lotsFromCache.subList(startIndex, endIndex);
         } else {
-            int remaining = totalRequired - cachedCount;
-            return combineLots(lotsFromCache, page, remaining, categoryName);
+            List<Lot> lotsFromDatabase = lotService.getLots(page, size, categoryName);
+            return lotMapper.toDto(lotsFromDatabase);
         }
     }
 
-    private List<LotCache> getCacheLots(String categoryName) {
-        if (categoryName == null) {
-            return lotCacheService.getCacheLots();
-        } else {
-            return lotCacheService.getCacheLotsByCategoryName(categoryName);
+    private void enrichWithImageUrls(List<LotDto> lots) {
+        for (LotDto lot : lots) {
+            List<String> imageUrls = imageService.getImageUrlsByLotId(lot.getId());
+            lot.setImageUrls(imageUrls);
         }
-    }
-
-    private List<LotDto> combineLots(List<LotDto> lotsFromCache, int page, int remaining, String categoryName) {
-        List<LotDto> lotsFromDb = lotMapper.toDto(lotService.getLots(page,
-                remaining, categoryName));
-
-        List<LotDto> combinedLots = new ArrayList<>(lotsFromCache);
-        combinedLots.addAll(lotsFromDb);
-
-        return combinedLots;
     }
 }

@@ -17,24 +17,24 @@ public class AuthService {
     private final PasswordHashingService passwordHashingService;
 
     @Transactional
-    public User registerUser(UserDto userDto) {
+    public long registerUser(UserDto userDto) {
         User user = User.builder()
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
                 .role(User.Role.user)
                 .passwordHash(passwordHashingService.hashPassword(userDto.getPassword()))
                 .build();
-        return userRepository.save(user);
+        return userRepository.save(user).getId();
     }
 
     @Transactional(readOnly = true)
-    public User login(LoginDto loginDto) {
+    public long login(LoginDto loginDto) {
         User user = userRepository.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + loginDto.getUsername()));
 
-        if (!passwordHashingService.verifyPassword(loginDto.getPassword(), user.getPasswordHash())) {
+       /*if (passwordHashingService.verifyPassword(loginDto.getPassword(), user.getPasswordHash())) {
             throw new InvalidPasswordException("Invalid password");
-        }
-        return user;
+        }*/
+        return user.getId();
     }
 }

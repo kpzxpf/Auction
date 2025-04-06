@@ -21,9 +21,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadUserProfile(userId) {
     try {
-        const response = await fetch('http://localhost:8080/user/profile', {
-            headers: { 'X-User-Id': userId }
+        const response = await fetch(`http://localhost:8080/user/${userId}`, {
+            headers: {
+                'X-User-Id': userId
+            }
         });
+
         if (!response.ok) throw new Error('Ошибка загрузки профиля');
         const user = await response.json();
 

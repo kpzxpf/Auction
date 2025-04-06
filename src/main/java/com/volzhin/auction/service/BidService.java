@@ -1,7 +1,6 @@
 package com.volzhin.auction.service;
 
 import com.volzhin.auction.config.filter.UserContext;
-import com.volzhin.auction.config.filter.UserIdFilter;
 import com.volzhin.auction.dto.BidDto;
 import com.volzhin.auction.entity.bid.Bid;
 import com.volzhin.auction.entity.lot.Lot;
@@ -14,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +47,11 @@ public class BidService {
 
         messagingTemplate.convertAndSend("/topic/lots/" + lot.getId(), lot.getCurrentPrice());
     }
+
+    public List<Bid> getBidsByLotId(long lotId) {
+        return bidRepository.getBidByLotId(lotId);
+    }
+
 
     private Bid convertBidDtoToBid(BidDto bidDto) {
         return Bid.builder()
