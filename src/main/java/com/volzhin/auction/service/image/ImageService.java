@@ -77,7 +77,7 @@ public class ImageService {
     private Image getImageById(Long resourceId) {
         return imageRepository.findById(resourceId)
                 .orElseThrow(() -> {
-                    log.error(String.format("Resource id: %d not found", resourceId));
+                    log.error("Resource id: {} not found", resourceId);
                     return new EntityNotFoundException(String.format("Resource id: %d not found", resourceId));
                 });
     }

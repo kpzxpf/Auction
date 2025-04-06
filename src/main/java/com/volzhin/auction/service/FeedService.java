@@ -9,6 +9,7 @@ import com.volzhin.auction.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -32,7 +33,7 @@ public class FeedService {
 
         enrichWithImageUrls(lotsToReturn);
 
-        return lotsToReturn;
+        return sortByEndTime(lotsToReturn);
     }
 
     private List<LotCache> retrieveCachedLots(String categoryName) {
@@ -41,6 +42,9 @@ public class FeedService {
                 : lotCacheService.getCacheLotsByCategoryName(categoryName);
     }
 
+    private List<LotDto> sortByEndTime(List<LotDto> lots) {
+        return lots.stream().sorted(Comparator.comparing(LotDto::getEndTime)).toList();
+    }
     private List<LotDto> getLotsToReturn(int startIndex, int endIndex, int cachedLotCount,
                                          List<LotDto> lotsFromCache, int page, int size, String categoryName) {
         if (cachedLotCount >= endIndex) {

@@ -11,6 +11,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface BidMapper {
+    @Mapping(source = "user.id", target = "userId")
+    @Mapping(source = "lot.id", target = "lotId")
+    @Mapping(source = "createdAt", target = "bidTime")
     BidDto toDto(Bid bid);
 
     BidCache toCache(BidDto bidDto);

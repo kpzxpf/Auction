@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const endTime = new Date(lot.endTime).getTime();
-        const startTime = new Date().getTime(); // Начальное время для расчета прогресса
+        const startTime = new Date().getTime();
         startCountdown(endTime, startTime);
 
         await loadBidHistory(lotId);
@@ -43,13 +43,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('bidForm').outerHTML = '<p class="text-muted">Войдите, чтобы сделать ставку</p>';
         }
 
+        updateNavigation();
+
         const socket = new SockJS('/ws');
         const stompClient = Stomp.over(socket);
         stompClient.connect({}, () => {
             stompClient.subscribe(`/topic/lots/${lotId}`, (message) => {
                 const newPrice = parseFloat(message.body);
                 document.getElementById('currentPrice').textContent = newPrice.toFixed(2);
-                loadBidHistory(lotId); // Обновляем историю ставок при новой ставке
+                loadBidHistory(lotId);
             });
         });
     } catch (error) {
@@ -90,7 +92,7 @@ function startCountdown(endTime, startTime) {
     const timerProgress = document.getElementById('timerProgress');
     const timerText = document.getElementById('timerText');
     const totalDuration = endTime - startTime;
-    const circumference = 2 * Math.PI * 55; // Длина окружности (2πr, где r = 55)
+    const circumference = 2 * Math.PI * 55;
 
     const interval = setInterval(() => {
         const now = new Date().getTime();
@@ -99,7 +101,7 @@ function startCountdown(endTime, startTime) {
         if (distance <= 0) {
             clearInterval(interval);
             timerProgress.style.strokeDashoffset = circumference;
-            timerProgress.style.stroke = '#dc3545'; // Красный цвет при завершении
+            timerProgress.style.stroke = '#dc3545';
             timerText.textContent = '0:00:00:00';
             timerText.classList.add('timer-ended');
             document.getElementById('bidForm')?.style.display === 'block' && (document.getElementById('bidForm').style.display = 'none');
@@ -115,7 +117,7 @@ function startCountdown(endTime, startTime) {
             timerProgress.style.strokeDashoffset = offset;
 
             if (progress < 0.25) {
-                timerProgress.style.stroke = '#ffc107'; // Желтый цвет при <25%
+                timerProgress.style.stroke = '#ffc107';
             }
         }
     }, 1000);
@@ -128,12 +130,15 @@ async function loadBidHistory(lotId) {
         const bids = await response.json();
 
         const bidTableBody = document.getElementById('bidTableBody');
-        bidTableBody.innerHTML = ''; // Очищаем таблицу перед обновлением
+        bidTableBody.innerHTML = '';
 
         if (bids.length === 0) {
             bidTableBody.innerHTML = '<tr><td colspan="2" class="text-muted">Ставок пока нет</td></tr>';
             return;
         }
+
+        // Сортировка ставок по убыванию bidTime (от новой к старой)
+        bids.sort((a, b) => new Date(b.bidTime) - new Date(a.bidTime));
 
         bids.forEach(bid => {
             const row = document.createElement('tr');
@@ -148,5 +153,29 @@ async function loadBidHistory(lotId) {
     } catch (error) {
         console.error('Ошибка загрузки истории ставок:', error);
         document.getElementById('bidTableBody').innerHTML = '<tr><td colspan="2" class="text-muted">Ошибка загрузки истории</td></tr>';
+    }
+}
+
+function updateNavigation() {
+    const userId = localStorage.getItem('userId');
+    const profileLink = document.getElementById('profileLink');
+    const logoutButton = document.getElementById('logoutButton');
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+
+    if (userId) {
+        profileLink.style.display = 'block';
+        logoutButton.style.display = 'block';
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+        logoutButton.onclick = () => {
+            localStorage.removeItem('userId');
+            window.location.reload();
+        };
+    } else {
+        profileLink.style.display = 'none';
+        logoutButton.style.display = 'none';
+        loginLink.style.display = 'block';
+        registerLink.style.display = 'block';
     }
 }

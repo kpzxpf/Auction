@@ -52,6 +52,9 @@ public class BidService {
         return bidRepository.getBidByLotId(lotId);
     }
 
+    public List<Bid> getBidsByUserId(long userId) {
+        return bidRepository.findUserMaxBidsLot(userId);
+    }
 
     private Bid convertBidDtoToBid(BidDto bidDto) {
         return Bid.builder()
