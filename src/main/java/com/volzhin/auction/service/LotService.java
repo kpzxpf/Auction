@@ -50,6 +50,7 @@ public class LotService {
     @Transactional
     public Lot updateLot(LotDto lotDto) {
         if (!existsById(lotDto.getId())) {
+
             log.error("Lot with id {} does not exist", lotDto.getId());
             throw new EntityNotFoundException(String.format("Lot with id %s not found", lotDto.getId()));
         }
@@ -131,7 +132,7 @@ public class LotService {
                 .title(lotDto.getTitle())
                 .description(lotDto.getDescription())
                 .startingPrice(lotDto.getStartingPrice())
-                .currentPrice(lotDto.getCurrentPrice())
+                .currentPrice(lotRepository.getCurrentPriceByLotId(lotDto.getId()))
                 .startTime(lotDto.getStartTime())
                 .endTime(lotDto.getEndTime())
                 .status(Lot.Status.active)

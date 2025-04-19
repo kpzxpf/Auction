@@ -3,38 +3,61 @@ package com.volzhin.auction.service;
 import com.volzhin.auction.dto.LoginDto;
 import com.volzhin.auction.dto.UserDto;
 import com.volzhin.auction.entity.User;
-import com.volzhin.auction.exception.InvalidPasswordException;
-import com.volzhin.auction.exception.UserNotFoundException;
 import com.volzhin.auction.repository.UserRepository;
+import com.volzhin.auction.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordHashingService passwordHashingService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
 
     @Transactional
     public long registerUser(UserDto userDto) {
+        if (userRepository.findByUsername(userDto.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists!");
+        }
         User user = User.builder()
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
                 .role(User.Role.user)
                 .passwordHash(passwordHashingService.hashPassword(userDto.getPassword()))
+                .balance(BigDecimal.ZERO)
                 .build();
-        return userRepository.save(user).getId();
+        User savedUser = userRepository.save(user);
+        log.info("User registered successfully with ID: {}", savedUser.getId());
+        return savedUser.getId();
     }
 
-    @Transactional(readOnly = true)
-    public long login(LoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new UserNotFoundException("User not found: " + loginDto.getUsername()));
+    public String login(LoginDto loginDto) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDto.getUsername(),
+                            loginDto.getPassword()
+                    )
+            );
 
-       /*if (passwordHashingService.verifyPassword(loginDto.getPassword(), user.getPasswordHash())) {
-            throw new InvalidPasswordException("Invalid password");
-        }*/
-        return user.getId();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String jwt = tokenProvider.generateAccessToken(authentication);
+            log.info("User '{}' logged in successfully.", loginDto.getUsername());
+            return jwt;
+        } catch (Exception e) {
+            log.error("Authentication failed for user '{}': {}", loginDto.getUsername(), e.getMessage());
+            throw new RuntimeException("Invalid username or password", e);
+        }
     }
 }

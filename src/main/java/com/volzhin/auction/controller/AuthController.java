@@ -4,6 +4,7 @@ import com.volzhin.auction.dto.LoginDto;
 import com.volzhin.auction.dto.UserDto;
 import com.volzhin.auction.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Long> login(@RequestBody LoginDto loginDto) {
-        return ResponseEntity.ok(authService.login(loginDto));
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginDto loginDto) {
+        String token = authService.login(loginDto);
+        return ResponseEntity.ok(new LoginResponse(token));
+    }
+
+    private record LoginResponse(String accessToken) {
     }
 }

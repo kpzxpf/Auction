@@ -6,6 +6,7 @@ import com.volzhin.auction.service.cache.LotCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -15,9 +16,9 @@ public class NewBidConsumer extends AbstractConsumer<BidCache> implements KafkaC
     private final BidCacheService bidCacheService;
     private final LotCacheService lotCacheService;
 
-    @KafkaListener(topics = "${spring.kafka.topic.names.update-lot}",
+    @KafkaListener(topics = "${spring.kafka.topic.names.new-bid}",
             groupId = "${spring.kafka.consumer.group-id.lot-group}")
-    public void listen(BidCache bidCache) {
+    public void listen(BidCache bidCache, Acknowledgment acknowledgment) {
         log.info("New event received: {}", bidCache);
 
         super.handle(bidCache, event -> {
@@ -25,5 +26,7 @@ public class NewBidConsumer extends AbstractConsumer<BidCache> implements KafkaC
                 bidCacheService.saveBid(bidCache);
             }
         });
+
+        acknowledgment.acknowledge();
     }
 }
