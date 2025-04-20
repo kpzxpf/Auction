@@ -136,8 +136,6 @@ async function loadBidHistory(lotId) {
             bidTableBody.innerHTML = '<tr><td colspan="2" class="text-muted">Ставок пока нет</td></tr>';
             return;
         }
-
-        // Сортировка ставок по убыванию bidTime (от новой к старой)
         bids.sort((a, b) => new Date(b.bidTime) - new Date(a.bidTime));
 
         bids.forEach(bid => {

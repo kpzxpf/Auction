@@ -32,9 +32,9 @@ public class AuthService {
         User user = userRepository.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + loginDto.getUsername()));
 
-       /*if (passwordHashingService.verifyPassword(loginDto.getPassword(), user.getPasswordHash())) {
+       if (passwordHashingService.verifyPassword(loginDto.getPassword(), user.getPasswordHash())) {
             throw new InvalidPasswordException("Invalid password");
-        }*/
+        }
         return user.getId();
     }
 }
