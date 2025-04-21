@@ -32,13 +32,44 @@
         <div class="profile-details">
             <h3 id="profile-username"></h3>
             <p><strong>Email:</strong> <span id="profile-email"></span></p>
-            <p><strong>Баланс:</strong> <span id="profile-balance" class="text-success"></span></p>
+            <p>
+                <strong>Баланс:</strong>
+                <span id="profile-balance" class="text-success"></span>
+                <button id="topUpButton" class="btn btn-sm btn-outline-success ms-2" data-bs-toggle="modal" data-bs-target="#topUpModal">
+                    Пополнить
+                </button>
+            </p>
         </div>
     </div>
     <h3 class="mt-5">Мои лоты</h3>
     <div id="user-lots" class="row mt-3"></div>
     <a href="add-lot.html" id="add-lot-btn" class="btn btn-primary w-100 mt-3">Добавить новый лот</a>
     <button id="logoutButtonFooter" class="btn btn-danger w-100 mt-3">Выйти</button>
+</div>
+
+<!-- Модальное окно для пополнения баланса -->
+<div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="topUpModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="topUpModalLabel">Пополнение баланса</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form id="topUpForm">
+                    <div class="mb-3">
+                        <label for="topUpAmount" class="form-label">Сумма (₽)</label>
+                        <input type="number" class="form-control" id="topUpAmount" min="1" required>
+                    </div>
+                </form>
+                <div id="topUpError" class="text-danger" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" id="confirmTopUp" class="btn btn-success">Пополнить</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <footer class="bg-dark text-light text-center py-3 mt-5">

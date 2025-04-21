@@ -33,18 +33,17 @@ public class FeedService {
 
         enrichWithImageUrls(lotsToReturn);
 
-        return sortByEndTime(lotsToReturn);
+        return lotsToReturn.stream()
+                .sorted(Comparator.comparing(LotDto::getEndTime))
+                .filter(lot -> lot.getStatus() == Lot.Status.active)
+                .toList();
     }
 
     private List<LotCache> retrieveCachedLots(String categoryName) {
-        return categoryName == null
-                ? lotCacheService.getCacheLots()
-                : lotCacheService.getCacheLotsByCategoryName(categoryName);
+        return categoryName == null ? lotCacheService.getCacheLots() :
+                lotCacheService.getCacheLotsByCategoryName(categoryName);
     }
 
-    private List<LotDto> sortByEndTime(List<LotDto> lots) {
-        return lots.stream().sorted(Comparator.comparing(LotDto::getEndTime)).toList();
-    }
     private List<LotDto> getLotsToReturn(int startIndex, int endIndex, int cachedLotCount,
                                          List<LotDto> lotsFromCache, int page, int size, String categoryName) {
         if (cachedLotCount >= endIndex) {

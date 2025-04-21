@@ -2,7 +2,6 @@ package com.volzhin.auction.service;
 
 import com.volzhin.auction.entity.Category;
 import com.volzhin.auction.repository.CategoryRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

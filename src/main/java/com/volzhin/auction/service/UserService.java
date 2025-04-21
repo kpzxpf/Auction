@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,10 +29,36 @@ public class UserService {
         });
     }
 
+    @Transactional(readOnly = true)
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(() -> {
                     log.error("User with name {} not found", username);
                     return new EntityNotFoundException(String.format("User with name %s not found", username));
                 });
+    }
+
+    @Transactional
+    public void decreaseBalance(Long userId, BigDecimal amount) {
+        User user = getUserById(userId);
+        if (user.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+        user.setBalance(user.getBalance().subtract(amount));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void increaseBalance(Long userId, BigDecimal amount) {
+        User user = getUserById(userId);
+        user.setBalance(user.getBalance().add(amount));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void topUpBalance(long userId, BigDecimal amount) {
+        User user = getUserById(userId);
+        user.setBalance(user.getBalance().add(amount));
+
+        userRepository.save(user);
     }
 }

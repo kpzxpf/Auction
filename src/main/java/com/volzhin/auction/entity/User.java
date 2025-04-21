@@ -30,7 +30,7 @@ public class User {
     private String passwordHash;
 
     @Column(name = "balance", nullable = false)
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)

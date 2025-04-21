@@ -100,9 +100,7 @@ class AuthServiceTest {
                 .build();
 
         when(userRepository.findByUsername(loginDto.getUsername())).thenReturn(Optional.of(foundUser));
-        // Мокируем verifyPassword, чтобы он вернул false (пароли не совпадают)
-        // Именно в этом случае по ТЕКУЩЕЙ логике сервиса исключение НЕ выбрасывается
-        when(passwordHashingService.verifyPassword(loginDto.getPassword(), foundUser.getPasswordHash())).thenReturn(false);
+        when(passwordHashingService.verifyPassword(loginDto.getPassword(), foundUser.getPasswordHash())).thenReturn(true);
 
         // Act
         long actualUserId = authService.login(loginDto);
@@ -140,7 +138,7 @@ class AuthServiceTest {
         // Arrange
         LoginDto loginDto = LoginDto.builder()
                 .username("existingUser")
-                .password("correctPassword") // Этот пароль СОВПАДАЕТ с хешем (verifyPassword вернет true)
+                .password("correctPassword")
                 .build();
 
         long userId = 5L;
@@ -152,9 +150,7 @@ class AuthServiceTest {
                 .build();
 
         when(userRepository.findByUsername(loginDto.getUsername())).thenReturn(Optional.of(foundUser));
-        // Мокируем verifyPassword, чтобы он вернул true (пароли совпадают)
-        // Именно в этом случае по ТЕКУЩЕЙ логике сервиса выбрасывается исключение
-        when(passwordHashingService.verifyPassword(loginDto.getPassword(), foundUser.getPasswordHash())).thenReturn(true);
+        when(passwordHashingService.verifyPassword(loginDto.getPassword(), foundUser.getPasswordHash())).thenReturn(false);
 
         // Act & Assert
         InvalidPasswordException exception = assertThrows(InvalidPasswordException.class, () -> {
@@ -162,7 +158,6 @@ class AuthServiceTest {
         });
 
         assertEquals("Invalid password", exception.getMessage());
-        // Убеждаемся, что verifyPassword ВЫЗЫВАЛСЯ
         verify(userRepository).findByUsername(loginDto.getUsername());
         verify(passwordHashingService).verifyPassword(loginDto.getPassword(), foundUser.getPasswordHash());
         verifyNoMoreInteractions(userRepository, passwordHashingService);
