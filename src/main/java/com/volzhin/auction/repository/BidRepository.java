@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
@@ -16,4 +17,8 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             "WHERE b.user.id = :userId " +
             "  AND b.amount = (SELECT MAX(b2.amount) FROM Bid b2 WHERE b2.lot = b.lot)")
     List<Bid> findUserMaxBidsLot(@Param("userId") Long userId);
+
+    Optional<Bid> findTopByLotIdOrderByAmountDesc(long lotId);
+
+    List<Bid> findByLotIdAndUserIdNot(long lotId, long winnerId);
 }

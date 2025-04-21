@@ -76,6 +76,7 @@
 
 <div class="container mt-5 lot-container">
     <h1 id="title" class="lot-title"></h1>
+
     <div id="images" class="images-carousel">
         <div id="carouselExample" class="carousel slide">
             <div class="carousel-inner"></div>
@@ -89,6 +90,7 @@
             </button>
         </div>
     </div>
+
     <div class="lot-details">
         <h3>Текущая цена: <span id="currentPrice" class="lot-price"></span>₽</h3>
         <div id="timer" class="timer-container">
@@ -100,12 +102,17 @@
         </div>
         <p id="description" class="text-muted"></p>
     </div>
+
     <form id="bidForm" style="display: none;" class="bid-form">
         <div class="input-group">
             <input type="number" id="bidAmount" class="form-control" placeholder="Ваша ставка" min="0" step="0.01">
             <button type="submit" class="btn btn-primary">Сделать ставку</button>
         </div>
+        <div class="mt-2">
+            <strong>Баланс:</strong> <span id="userBalance" class="fw-bold"></span>₽
+        </div>
     </form>
+
     <div id="bidHistory" class="bid-history">
         <h5>История ставок</h5>
         <table class="table table-sm">

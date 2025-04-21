@@ -39,12 +39,19 @@
             <label for="endTime" class="form-label">Время окончания</label>
             <input type="datetime-local" class="form-control" id="endTime" required>
         </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Категория</label>
+            <select class="form-select" id="category" required></select>
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Статус</label>
+            <select class="form-select" id="status" required>
+                <option value="active">Активен</option>
+                <option value="closed">Закрыт</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary w-100">Сохранить изменения</button>
     </form>
 </div>
-
-<footer class="bg-dark text-light text-center py-3 mt-5">
-    <p>&copy; 2025 Аукцион.ру. Все права защищены.</p>
-</footer>
 </body>
 </html>

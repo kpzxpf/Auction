@@ -35,6 +35,7 @@ public class LotService {
 
     @Transactional
     public Lot createLot(LotDto lotDto, List<MultipartFile> files) {
+        lotDto.setStatus(Lot.Status.active);
         Lot lot = lotDtoToLot(lotDto);
         lot.setCurrentPrice(lotDto.getStartingPrice());
 
@@ -110,6 +111,10 @@ public class LotService {
         lotRepository.save(lot);
     }
 
+    public void finishLotById(long lotId) {
+
+    }
+
     private void updateCacheLot(Lot lot) {
         CompletableFuture.runAsync(() -> updateLotProducer.send(
                 LotCache.builder()
@@ -131,10 +136,10 @@ public class LotService {
                 .title(lotDto.getTitle())
                 .description(lotDto.getDescription())
                 .startingPrice(lotDto.getStartingPrice())
-                .currentPrice(lotDto.getCurrentPrice())
+                .currentPrice(lotRepository.findCurrentPriceById(lotDto.getId()))
                 .startTime(lotDto.getStartTime())
                 .endTime(lotDto.getEndTime())
-                .status(Lot.Status.active)
+                .status(lotDto.getStatus())
                 .category(categoryService.getCategoryByName((lotDto.getCategoryName())))
                 .seller(userService.getUserById(lotDto.getSellerId()))
                 .build();

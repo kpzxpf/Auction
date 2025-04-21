@@ -7,13 +7,14 @@ import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.mapper.BidMapper;
 import com.volzhin.auction.producer.NewBidProducer;
 import com.volzhin.auction.repository.BidRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +49,24 @@ public class BidService {
         messagingTemplate.convertAndSend("/topic/lots/" + lot.getId(), lot.getCurrentPrice());
     }
 
+    @Transactional(readOnly = true)
     public List<Bid> getBidsByLotId(long lotId) {
         return bidRepository.getBidByLotId(lotId);
     }
 
+    @Transactional(readOnly = true)
     public List<Bid> getBidsByUserId(long userId) {
         return bidRepository.findUserMaxBidsLot(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Bid> getWinningBidForLot(Long lotId) {
+        return bidRepository.findTopByLotIdOrderByAmountDesc(lotId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Bid> getLosingBidsForLot(Long lotId, Long winnerId) {
+        return bidRepository.findByLotIdAndUserIdNot(lotId, winnerId);
     }
 
     private Bid convertBidDtoToBid(BidDto bidDto) {
