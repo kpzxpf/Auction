@@ -7,10 +7,12 @@ import com.volzhin.auction.service.LotService;
 import com.volzhin.auction.service.image.ImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -29,10 +31,14 @@ public class LotController {
         return lotMapper.toDto(savedLot);
     }
 
-    @PutMapping
-    public LotDto updateLot(@RequestBody LotDto lot) {
-        Lot updatedLot = lotService.updateLot(lot);
-        return lotMapper.toDto(updatedLot);
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public LotDto updateLot(
+            @RequestPart("lot") @Valid LotDto lotDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) {
+        List<MultipartFile> actualFiles = files != null ? files : Collections.emptyList();
+
+        return lotMapper.toDto(lotService.updateLot(lotDto, actualFiles));
     }
 
     @GetMapping("/{id}")

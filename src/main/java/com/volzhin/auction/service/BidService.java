@@ -2,6 +2,7 @@ package com.volzhin.auction.service;
 
 import com.volzhin.auction.config.filter.UserContext;
 import com.volzhin.auction.dto.BidDto;
+import com.volzhin.auction.entity.User;
 import com.volzhin.auction.entity.bid.Bid;
 import com.volzhin.auction.entity.lot.Lot;
 import com.volzhin.auction.mapper.BidMapper;
@@ -47,6 +48,9 @@ public class BidService {
         newBidProducer.send(bidMapper.toCache(bidDto));
 
         messagingTemplate.convertAndSend("/topic/lots/" + lot.getId(), lot.getCurrentPrice());
+
+        User user = userService.getUserById(bidDto.getUserId());
+        userService.decreaseBalance(user.getId(), bid.getAmount());
     }
 
     @Transactional(readOnly = true)

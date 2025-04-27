@@ -32,7 +32,7 @@ public class LotDto {
     private LocalDateTime endTime;
     private Lot.Status status;
     private long sellerId;
-    @NotNull
+    @NotBlank
     private String categoryName;
     private List<String> imageUrls;
 }

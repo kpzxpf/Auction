@@ -24,8 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/top-up")
-    public ResponseEntity<?> topUpBalance(@PathVariable Long userId, @RequestBody TopUpRequest topUpRequest) {
-         userService.topUpBalance(userId, topUpRequest.getAmount());
-         return ResponseEntity.ok().build();
+    public UserDto topUpBalance(@PathVariable Long userId, @RequestBody TopUpRequest topUpRequest) {
+         return userMapper.toDto(userService.topUpBalance(userId, topUpRequest.getAmount()));
     }
 }

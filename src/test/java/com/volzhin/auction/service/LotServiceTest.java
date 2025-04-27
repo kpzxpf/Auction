@@ -112,10 +112,14 @@ class LotServiceTest {
     void updateLot_WhenLotNotExists_ShouldThrowException() {
         // Arrange
         LotDto dto = createTestLotDto();
+        List<MultipartFile> files = List.of(file);
+        List<Image> images = List.of(new Image());
+        when(imageService.addImages(any(), any())).thenReturn(images);
+
         when(lotRepository.existsById(dto.getId())).thenReturn(false);
 
         // Act & Assert
-        assertThrows(EntityNotFoundException.class, () -> lotService.updateLot(dto));
+        assertThrows(EntityNotFoundException.class, () -> lotService.updateLot(dto, files));
     }
 
     @Test

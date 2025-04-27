@@ -5,17 +5,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
+
     const userId = localStorage.getItem('userId');
     let userBalance = 0;
 
     try {
         // Загружаем данные лота
-        const lotResponse = await fetch(`http://localhost:8080/lots/${lotId}`, { headers: userId ? { 'X-User-Id': userId } : {} });
+        const lotResponse = await fetch(`http://localhost:8080/lots/${lotId}`, {
+            headers: userId ? { 'X-User-Id': userId } : {}
+        });
         if (!lotResponse.ok) throw new Error('Лот не найден');
         const lot = await lotResponse.json();
 
+        // Загружаем данные пользователя
         if (userId) {
-            const userResp = await fetch(`http://localhost:8080/user/${userId}`, { headers: { 'X-User-Id': userId } });
+            const userResp = await fetch(`http://localhost:8080/user/${userId}`, {
+                headers: { 'X-User-Id': userId }
+            });
             if (userResp.ok) {
                 const user = await userResp.json();
                 userBalance = user.balance || 0;
@@ -23,10 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
 
+        // Рендерим данные лота
         document.getElementById('title').textContent = lot.title;
         document.getElementById('description').textContent = lot.description || 'Описание отсутствует';
         document.getElementById('currentPrice').textContent = lot.currentPrice.toFixed(2);
 
+        // Рендерим карусель изображений
         const carouselInner = document.querySelector('.carousel-inner');
         if (lot.imageUrls?.length > 0) {
             lot.imageUrls.forEach((url, i) => {
@@ -39,12 +47,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('images').innerHTML = '<p class="text-muted">Изображения отсутствуют</p>';
         }
 
+        // Запускаем таймер и историю ставок
         const endTime = new Date(lot.endTime).getTime();
-        const now = Date.now();
-        startCountdown(endTime, now, lotId);
-
+        startCountdown(endTime, Date.now(), lotId);
         await loadBidHistory(lotId);
 
+        // Показываем форму для ставок или сообщение о необходимости входа
         if (userId) {
             document.getElementById('bidForm').style.display = 'block';
             setupBidForm(lotId, userId);
@@ -54,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         updateNavigation();
 
+        // WebSocket для обновлений цены и победителя
         const socket = new SockJS('/ws');
         const stompClient = Stomp.over(socket);
         stompClient.connect({}, () => {
@@ -61,6 +70,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const newPrice = parseFloat(message.body);
                 document.getElementById('currentPrice').textContent = newPrice.toFixed(2);
                 loadBidHistory(lotId);
+            });
+            stompClient.subscribe(`/topic/lots/${lotId}/winner`, message => {
+                const winner = JSON.parse(message.body);
+                document.getElementById('winnerContainer').innerHTML =
+                    `<h5>Победитель аукциона: ${winner.userName} с ставкой ${winner.amount.toFixed(2)}₽</h5>`;
             });
         });
     } catch (error) {
@@ -77,7 +91,8 @@ function setupBidForm(lotId, userId) {
             alert('Введите корректную сумму ставки');
             return;
         }
-        if (bidAmount > parseFloat(document.getElementById('userBalance').textContent)) {
+        const currentBalance = parseFloat(document.getElementById('userBalance').textContent);
+        if (bidAmount > currentBalance) {
             alert('Сумма ставки не может превышать баланс');
             return;
         }
@@ -89,13 +104,11 @@ function setupBidForm(lotId, userId) {
                     'Content-Type': 'application/json',
                     'X-User-Id': userId
                 },
-                body: JSON.stringify({ lotId, amount: bidAmount })
+                body: JSON.stringify({ lotId, userId, amount: bidAmount })
             });
-
             if (!response.ok) throw new Error('Ошибка при размещении ставки');
             document.getElementById('bidAmount').value = '';
-            // После успешной ставки уменьшаем баланс локально
-            const newBalance = parseFloat(document.getElementById('userBalance').textContent) - bidAmount;
+            const newBalance = currentBalance - bidAmount;
             document.getElementById('userBalance').textContent = newBalance.toFixed(2);
         } catch (error) {
             console.error('Ошибка:', error);
@@ -123,10 +136,9 @@ function startCountdown(endTime, startTime, lotId) {
             timerText.textContent = '0:00:00:00';
             timerText.classList.add('timer-ended');
 
+            document.getElementById('lotFinishedMessage').style.display = 'block';
             const bidForm = document.getElementById('bidForm');
-            if (bidForm) {
-                bidForm.style.display = 'none';
-            }
+            if (bidForm) bidForm.style.display = 'none';
 
             fetch(`http://localhost:8080/transaction/${lotId}/finish`, { method: 'PUT' })
                 .then(r => { if (!r.ok) console.warn('Ошибка при завершении лота на сервере'); });
@@ -135,6 +147,7 @@ function startCountdown(endTime, startTime, lotId) {
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
             timerText.textContent = `${days}:${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
             if (timerProgress) {
@@ -142,60 +155,48 @@ function startCountdown(endTime, startTime, lotId) {
                 const offset = circumference * (1 - progress);
                 timerProgress.style.strokeDashoffset = offset;
 
-                if (progress < 0.25) {
-                    timerProgress.style.stroke = '#ffc107';
-                }
+                if (progress < 0.25) timerProgress.style.stroke = '#dc3545';
+                else if (progress < 0.5) timerProgress.style.stroke = '#ffc107';
+                else timerProgress.style.stroke = '#28a745';
             }
         }
     }, 1000);
 }
 
 async function loadBidHistory(lotId) {
+    const userId = localStorage.getItem('userId');
+    const headers = userId ? { 'X-User-Id': userId } : {};
+
     try {
-        const response = await fetch(`http://localhost:8080/bids/lot/${lotId}`);
-        if (!response.ok) throw new Error('Не удалось загрузить историю ставок');
-        const bids = await response.json();
+        const url = `http://localhost:8080/bids/lot/${encodeURIComponent(lotId)}`;
+        console.log('Loading bid history from', url);
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`Error fetching bid history (${response.status}):`, errText);
+            return;
+        }
+        let bidHistory = await response.json();
+        bidHistory.sort((a, b) => b.amount - a.amount);
 
         const bidTableBody = document.getElementById('bidTableBody');
         bidTableBody.innerHTML = '';
 
-        if (bids.length === 0) {
-            bidTableBody.innerHTML = '<tr><td colspan="2" class="text-muted">Ставок пока нет</td></tr>';
-            return;
-        }
-
-        bids.sort((a, b) => new Date(b.bidTime) - new Date(a.bidTime));
-        bids.forEach(bid => {
+        bidHistory.forEach(bid => {
+            const date = new Date(bid.timestamp || bid.bidTime);
+            const formatted = isNaN(date) ? '—' : date.toLocaleString();
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${bid.amount.toFixed(2)}</td>
-                <td>${new Date(bid.bidTime).toLocaleString('ru-RU')}</td>
-            `;
+            row.innerHTML = `<td>${bid.amount.toFixed(2)}</td><td>${formatted}</td>`;
             bidTableBody.appendChild(row);
         });
     } catch (error) {
-        console.error('Ошибка загрузки истории ставок:', error);
-        document.getElementById('bidTableBody').innerHTML = '<tr><td colspan="2" class="text-muted">Ошибка загрузки истории</td></tr>';
+        console.error('Ошибка в loadBidHistory():', error);
     }
 }
 
 function updateNavigation() {
     const userId = localStorage.getItem('userId');
-    const profileLink = document.getElementById('profileLink');
-    const logoutButton = document.getElementById('logoutButton');
-    const loginLink = document.getElementById('loginLink');
-    const registerLink = document.getElementById('registerLink');
-
-    if (userId) {
-        profileLink.style.display = 'block';
-        logoutButton.style.display = 'block';
-        loginLink.style.display = 'none';
-        registerLink.style.display = 'none';
-        logoutButton.onclick = () => { localStorage.removeItem('userId'); window.location.reload(); };
-    } else {
-        profileLink.style.display = 'none';
-        logoutButton.style.display = 'none';
-        loginLink.style.display = 'block';
-        registerLink.style.display = 'block';
-    }
+    document.getElementById('profileLink').style.display = userId ? 'block' : 'none';
+    document.getElementById('loginLink').style.display = userId ? 'none' : 'inline-block';
+    document.getElementById('registerLink').style.display = userId ? 'none' : 'inline-block';
 }

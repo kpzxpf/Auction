@@ -55,10 +55,10 @@ public class UserService {
     }
 
     @Transactional
-    public void topUpBalance(long userId, BigDecimal amount) {
+    public User topUpBalance(long userId, BigDecimal amount) {
         User user = getUserById(userId);
         user.setBalance(user.getBalance().add(amount));
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }

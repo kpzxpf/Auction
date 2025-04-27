@@ -242,3 +242,81 @@ body {
     border-radius: 0.25rem;
 }
 
+#delete-lot-btn {
+    position: static !important;
+    bottom: auto !important;
+    margin-top: .5rem;
+}
+.delete-lot-btn i {
+    font-size: 1.1rem;
+}
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+#timer {
+    margin-top: 20px;
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+#timerText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.carousel-inner img {
+    max-height: 300px;
+    object-fit: cover;
+}
+
+#bidForm input {
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#bidForm button {
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#bidForm button:hover {
+    background-color: #218838;
+}
+
+#lotFinishedMessage {
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+    margin-top: 20px;
+}
+

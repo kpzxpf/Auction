@@ -1,3 +1,5 @@
+import {updateNavigation} from "./updateNavigation";
+
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -149,22 +151,3 @@ function displayUserLots(lots) {
     });
 }
 
-function updateNavigation() {
-    const userId = localStorage.getItem('userId');
-    const profileLink = document.getElementById('profileLink');
-    const logoutButton = document.getElementById('logoutButton');
-    const loginLink = document.getElementById('loginLink');
-    const registerLink = document.getElementById('registerLink');
-
-    if (userId) {
-        profileLink.style.display = 'block';
-        logoutButton.style.display = 'block';
-        loginLink.style.display = 'none';
-        registerLink.style.display = 'none';
-    } else {
-        profileLink.style.display = 'none';
-        logoutButton.style.display = 'none';
-        loginLink.style.display = 'block';
-        registerLink.style.display = 'block';
-    }
-}

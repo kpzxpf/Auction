@@ -41,6 +41,6 @@ public class Transaction {
     private LocalDateTime createdAt;
 
     public enum Type {
-        PAYMENT, REFUND
+        payment, refund
     }
 }

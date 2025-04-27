@@ -40,21 +40,38 @@ public class LotService {
         lot.setCurrentPrice(lotDto.getStartingPrice());
 
         lot = lotRepository.save(lot);
-        List<Image> images = imageService.addImages(lot, files);
-        Lot finalLot = lot;
-        images.forEach(image -> image.setLot(finalLot));
-        lot.setImages(images);
+
+        if (files != null && !files.isEmpty()) {
+            List<MultipartFile> nonEmptyFiles = files.stream()
+                    .filter(file -> !file.isEmpty())
+                    .toList();
+
+            if (!nonEmptyFiles.isEmpty()) {
+                List<Image> images = imageService.addImages(lot, nonEmptyFiles);
+                Lot finalLot = lot;
+                images.forEach(image -> image.setLot(finalLot));
+                lot.setImages(images);
+            }
+        }
 
         return lotRepository.save(lot);
     }
 
     @Transactional
-    public Lot updateLot(LotDto lotDto) {
-        if (!existsById(lotDto.getId())) {
-            log.error("Lot with id {} does not exist", lotDto.getId());
-            throw new EntityNotFoundException(String.format("Lot with id %s not found", lotDto.getId()));
+    public Lot updateLot(LotDto lotDto, List<MultipartFile> files) {
+        Lot lot = lotDtoToLot(lotDto);
+        lot.setImages(imageService.getImageByLotId(lotDto.getId()));
+
+        if (!files.isEmpty()) {
+            for (Image img : lot.getImages()) {
+                imageService.deleteImage(img.getId());
+            }
+            lot.getImages().clear();
+
+            List<Image> newImages = imageService.addImages(lot, files);
+            newImages.forEach(img -> img.setLot(lot));
+            lot.setImages(newImages);
         }
-        Lot lot = lotRepository.save(lotDtoToLot(lotDto));
 
         if (lot.getStatus() == Lot.Status.active) {
             updateCacheLot(lot);
@@ -62,7 +79,7 @@ public class LotService {
             deleteLotFromCache(lot.getId());
         }
 
-        return lot;
+        return lotRepository.save(lot);
     }
 
     @Transactional(readOnly = true)
@@ -111,10 +128,6 @@ public class LotService {
         lotRepository.save(lot);
     }
 
-    public void finishLotById(long lotId) {
-
-    }
-
     private void updateCacheLot(Lot lot) {
         CompletableFuture.runAsync(() -> updateLotProducer.send(
                 LotCache.builder()
@@ -127,7 +140,7 @@ public class LotService {
     }
 
     private void deleteLotFromCache(long id) {
-        CompletableFuture.runAsync(() -> deleteLotProducer.send(new DeleteLotEvent(id)));
+        deleteLotProducer.send(new DeleteLotEvent(id));
     }
 
     private Lot lotDtoToLot(LotDto lotDto) {

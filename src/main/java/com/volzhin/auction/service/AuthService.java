@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -22,6 +24,7 @@ public class AuthService {
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
                 .role(User.Role.user)
+                .balance(BigDecimal.ZERO)
                 .passwordHash(passwordHashingService.hashPassword(userDto.getPassword()))
                 .build();
 

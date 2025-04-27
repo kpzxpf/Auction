@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,9 +31,15 @@ public class ImageService {
 
     @Transactional
     public List<Image> addImages(Lot lot, List<MultipartFile> imageFiles) {
+        if (imageFiles == null || imageFiles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         List<MultipartFile> suitableImages = resizeFiles(imageFiles);
-        return s3Service.uploadFiles(
-                suitableImages, createFolder(lot.getId(), imageFiles.stream().findAny().get().getContentType()));
+        String contentType = suitableImages.get(0).getContentType();
+
+        String folder = createFolder(lot.getId(), contentType);
+        return s3Service.uploadFiles(suitableImages, folder);
     }
 
     @Transactional(readOnly = true)
@@ -44,8 +51,13 @@ public class ImageService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public List<Image> getImageByLotId(long lotId) {
+        return imageRepository.findAllByLotId(lotId);
+    }
+
     @Transactional
-    public Image deleteResource(Long imageId) {
+    public Image deleteImage(Long imageId) {
         Image resource = getImageById(imageId);
 
         s3Service.deleteFile(resource.getKey());
@@ -62,7 +74,11 @@ public class ImageService {
 
     private List<MultipartFile> resizeFiles(List<MultipartFile> files) {
         List<MultipartFile> resizedFiles = new ArrayList<>();
-
+        if (files == null || files.isEmpty()) {
+            log.info("No files to resize.");
+            return new ArrayList<>(); 
+        }
+        
         files.forEach(file -> {
             try {
                 resizedFiles.add(resizeService.resizeImage(file));

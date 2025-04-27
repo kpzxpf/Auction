@@ -1,4 +1,4 @@
-    package com.volzhin.auction.service;
+package com.volzhin.auction.service;
 
 import com.volzhin.auction.dto.event.DeleteLotEvent;
 import com.volzhin.auction.entity.Transaction;
@@ -44,17 +44,16 @@ public class TransactionService {
                 .user(buyer)
                 .amount(finalPrice)
                 .lot(lot)
-                .type(Transaction.Type.PAYMENT)
+                .type(Transaction.Type.payment)
                 .build());
 
         userService.increaseBalance(seller.getId(), finalPrice);
         transactionRepository.save(Transaction.builder()
-                .user(buyer)
+                .user(seller)
                 .amount(finalPrice)
                 .lot(lot)
-                .type(Transaction.Type.PAYMENT)
+                .type(Transaction.Type.refund)
                 .build());
-
 
         lot.setStatus(Lot.Status.sold);
         deleteLotProducer.send(new DeleteLotEvent(lot.getId()));

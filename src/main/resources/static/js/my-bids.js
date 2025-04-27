@@ -86,22 +86,15 @@ function displayUserBids(bids) {
 function updateNavigation() {
     const userId = localStorage.getItem('userId');
     const profileLink = document.getElementById('profileLink');
-    const logoutButton = document.getElementById('logoutButton');
     const loginLink = document.getElementById('loginLink');
     const registerLink = document.getElementById('registerLink');
 
     if (userId) {
         profileLink.style.display = 'block';
-        logoutButton.style.display = 'block';
         loginLink.style.display = 'none';
         registerLink.style.display = 'none';
-        logoutButton.onclick = () => {
-            localStorage.removeItem('userId');
-            window.location.href = 'login.html';
-        };
     } else {
         profileLink.style.display = 'none';
-        logoutButton.style.display = 'none';
         loginLink.style.display = 'block';
         registerLink.style.display = 'block';
     }
