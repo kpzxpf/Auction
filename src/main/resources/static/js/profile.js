@@ -1,5 +1,3 @@
-import {updateNavigation} from "./updateNavigation";
-
 document.addEventListener('DOMContentLoaded', async () => {
     const userId = localStorage.getItem('userId');
     if (!userId) {
@@ -7,7 +5,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Кнопки выхода
     const logoutButtons = [
         document.getElementById('logoutButton'),
         document.getElementById('logoutButtonFooter')
@@ -149,5 +146,22 @@ function displayUserLots(lots) {
 
         container.appendChild(col);
     });
+}
+function updateNavigation() {
+    const userId = localStorage.getItem('userId');
+    const profileLink = document.getElementById('profileLink');
+    const loginLink = document.getElementById('loginLink');
+    const registerLink = document.getElementById('registerLink');
+
+    if (userId) {
+        profileLink.style.display = 'block';
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+
+    } else {
+        profileLink.style.display = 'none';
+        loginLink.style.display = 'block';
+        registerLink.style.display = 'block';
+    }
 }
 
